@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1029630533850",
+    "project_id": "rurbansoft-e7dd2",
+    "storage_bucket": "rurbansoft-e7dd2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029630533850:android:c22ff75abc3849587e05e3",
+        "android_client_info": {
+          "package_name": "com.example.rurbansoft"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029630533850-6857pjq8djdgc2el2ol7nar1glunusj8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7JdL7d78bVTZGc0_hlq5hnT0eRkWci_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029630533850-6857pjq8djdgc2el2ol7nar1glunusj8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
