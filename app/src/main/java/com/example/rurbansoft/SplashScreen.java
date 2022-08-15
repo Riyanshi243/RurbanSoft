@@ -11,19 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 public class SplashScreen extends AppCompatActivity {
-    private static final String TAG = "SplashScreen";
+
     private int SLEEP_TIMER = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setFlags(Window.FEATURE_NO_TITLE,Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
-        //getSupportActionBar().hide();
         LogoLauncher logoLauncher = new LogoLauncher();
         logoLauncher.start();
     }
