@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-            startActivity(intent);
             intent.putExtra("state", state_);
             intent.putExtra("district", district_);
             intent.putExtra("cluster", cluster_);
@@ -104,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("sub_component", sub_component_);
             intent.putExtra("phase", phase_);
             intent.putExtra("status", workStatus_);
+            startActivity(intent);
             MainActivity.this.finish();
         }
     }
