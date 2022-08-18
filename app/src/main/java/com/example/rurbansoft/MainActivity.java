@@ -1,9 +1,15 @@
 package com.example.rurbansoft;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -47,10 +53,18 @@ public class MainActivity extends AppCompatActivity {
                 saveWorkItem();
             }
         });
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+
+        }
     }
 
     private void saveWorkItem() {
-
         String state_=state.getText().toString().trim();
         String district_=district.getText().toString().trim();
         String cluster_=cluster.getText().toString().trim();
@@ -107,4 +121,27 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.finish();
         }
     }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(this)
+                .setMessage("Do you want to Logout?")
+                .setTitle("Logout ")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    // do something when the button is clicked
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        MainActivity.super.onBackPressed();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    // do something when the button is clicked
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+        alertbox.show();
+    }
+
 }
