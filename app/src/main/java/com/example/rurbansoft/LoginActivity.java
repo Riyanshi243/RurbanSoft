@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -138,11 +139,13 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     else
                     {
+                        progressDialog.dismiss();
                         Toast.makeText(LoginActivity.this,"Login Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
 
                     }
                 }
             });
+            progressDialog.show();
         }
     }
     public void forgetPassword(View v)
@@ -179,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
         });
         passres.create().show();
     }
+    @SuppressLint("MissingPermission")
     private boolean checkInternetConenction() {
         ConnectivityManager connec = (ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
 
