@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,11 +26,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class CameraActivity extends AppCompatActivity
 {
-    String state, district, cluster, gp, component, sub_component, phase, workStatus;
+    String state, district, cluster, gp, component, sub_component, phase, workStatus, userId, timeStamp, email;
     Button capture, retake, save;
     ImageView captureImage;
+    ProgressDialog progressDialog;
+    FirebaseAuth fAuth;
+    FirebaseUser fUser;
+    FirebaseFirestore fStore;
 
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -53,6 +70,10 @@ public class CameraActivity extends AppCompatActivity
         capture=findViewById(R.id.capture);
         retake=findViewById(R.id.retake);
         save=findViewById(R.id.save);
+        progressDialog=new ProgressDialog(this);
+        fAuth=FirebaseAuth.getInstance();
+        fStore=FirebaseFirestore.getInstance();
+        fUser=fAuth.getCurrentUser();
 
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
@@ -99,6 +120,46 @@ public class CameraActivity extends AppCompatActivity
     }
 
     private void saveWorkItem() {
+        Date t= Calendar.getInstance().getTime();
+        timeStamp=t.toString();
+        progressDialog.setMessage("Please wait while workItem is uploaded");
+        progressDialog.setTitle("WORK-ITEM");
+        progressDialog.setCanceledOnTouchOutside(false);
+        userId=fAuth.getCurrentUser().getUid();
+        email=fAuth.getCurrentUser().getEmail();
+        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
+        Map<String, Object> workItem=new HashMap<>();
+
+        workItem.put("Email",email);
+        workItem.put("State",state );
+        workItem.put("District", district);
+        workItem.put("Cluster",cluster);
+        workItem.put("Gram Panchayat",gp);
+        workItem.put("Component",component);
+        workItem.put("Sub_component",sub_component);
+        workItem.put("Phase",phase);
+        workItem.put("WorkStatus",workStatus);
+        workItem.put("Latitude",lat);
+        workItem.put("Longitude",lon);
+        workItem.put("timeStamp", timeStamp);
+
+        allWorkItem.set(workItem).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                progressDialog.dismiss();
+                Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(CameraActivity.this, MapActivity.class);
+                startActivity(intent);
+                CameraActivity.this.finish();
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(CameraActivity.this,"WorkItem uploading failed",Toast.LENGTH_SHORT).show();
+            }
+        });
+        progressDialog.show();
 
     }
 
@@ -148,8 +209,6 @@ public class CameraActivity extends AppCompatActivity
                     if (location != null) {
                         lat = location.getLatitude();
                         lon = location.getLongitude();
-                        Log.e("latitude", "latitude: "+lat);
-                        Log.e("longitude", "longitude: "+lon);
 
                     }
                     else {

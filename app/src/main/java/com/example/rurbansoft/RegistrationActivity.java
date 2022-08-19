@@ -124,8 +124,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful())
                     {
-                        progressDialog.dismiss();
-                        Toast.makeText(RegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
                         userId=fAuth.getCurrentUser().getUid();
                         DocumentReference allUserData=fStore.collection("users").document(userId);
                         Map<String, Object> users=new HashMap<>();
@@ -137,17 +135,18 @@ public class RegistrationActivity extends AppCompatActivity {
                         allUserData.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
-                                //log
+                                progressDialog.dismiss();
+                                Toast.makeText(RegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                RegistrationActivity.this.finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                //log
+                                Toast.makeText(RegistrationActivity.this,"Registration Failed",Toast.LENGTH_SHORT).show();
                             }
                         });
-                        Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        RegistrationActivity.this.finish();
                     }
                     else
                     {
@@ -156,10 +155,8 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
                 }
             });
+            progressDialog.show();
         }
-
-
-
 
     }
 

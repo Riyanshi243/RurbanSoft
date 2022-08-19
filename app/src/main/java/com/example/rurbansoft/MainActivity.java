@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Logout ")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    // do something when the button is clicked
                     public void onClick(DialogInterface dialog, int arg1) {
                         MainActivity.super.onBackPressed();
                         finish();
@@ -136,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
-                    // do something when the button is clicked
                     public void onClick(DialogInterface dialog, int arg1) {
                         dialog.cancel();
                     }
