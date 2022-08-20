@@ -118,28 +118,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("phase", phase_);
             intent.putExtra("status", workStatus_);
             startActivity(intent);
-            MainActivity.this.finish();
         }
-    }
-    @Override
-    public void onBackPressed() {
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(this)
-                .setMessage("Do you want to Logout?")
-                .setTitle("Logout ")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        MainActivity.super.onBackPressed();
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        dialog.cancel();
-                    }
-                });
-        alertbox.show();
     }
 
 }

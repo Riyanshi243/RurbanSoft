@@ -133,9 +133,9 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_SHORT).show();
                         userId=fAuth.getCurrentUser().getUid();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, LandingUser.class);
                         startActivity(intent);
-                       LoginActivity.this.finish();
+                        LoginActivity.this.finish();
                     }
                     else
                     {

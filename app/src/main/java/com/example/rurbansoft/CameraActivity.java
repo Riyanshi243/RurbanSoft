@@ -199,8 +199,6 @@ public class CameraActivity extends AppCompatActivity
                 Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(CameraActivity.this, MapsActivity.class);
                 startActivity(intent);
-                CameraActivity.this.finish();
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
