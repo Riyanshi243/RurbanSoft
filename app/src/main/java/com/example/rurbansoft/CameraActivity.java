@@ -116,7 +116,7 @@ public class CameraActivity extends AppCompatActivity
                         // Continue only if the File was successfully created
                         if (photoFile != null) {
                             Uri photoURI = FileProvider.getUriForFile(CameraActivity.this,
-                                    "net.smallacademy.android.fileprovider",
+                                    "com.example.rurbansoft.fileprovider",
                                     photoFile);
                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                             startActivityForResult(cameraIntent, CAMERA_REQUEST);
@@ -148,7 +148,7 @@ public class CameraActivity extends AppCompatActivity
                             // Continue only if the File was successfully created
                             if (photoFile != null) {
                                 Uri photoURI = FileProvider.getUriForFile(CameraActivity.this,
-                                        "net.smallacademy.android.fileprovider",
+                                        "com.example.rurbansoft.fileprovider",
                                         photoFile);
                                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST);

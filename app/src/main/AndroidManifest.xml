@@ -68,7 +68,7 @@
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="net.smallacademy.android.fileprovider"
+            android:authorities="com.example.rurbansoft.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
