@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("phase", phase_);
             intent.putExtra("status", workStatus_);
             startActivity(intent);
-            MainActivity.this.finish();
         }
     }
     @Override

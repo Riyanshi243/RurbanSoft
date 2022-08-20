@@ -116,7 +116,7 @@ public class CameraActivity extends AppCompatActivity
                         // Continue only if the File was successfully created
                         if (photoFile != null) {
                             Uri photoURI = FileProvider.getUriForFile(CameraActivity.this,
-                                    "net.smallacademy.android.fileprovider",
+                                    "com.example.rurbansoft.fileprovider",
                                     photoFile);
                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                             startActivityForResult(cameraIntent, CAMERA_REQUEST);
@@ -148,7 +148,7 @@ public class CameraActivity extends AppCompatActivity
                             // Continue only if the File was successfully created
                             if (photoFile != null) {
                                 Uri photoURI = FileProvider.getUriForFile(CameraActivity.this,
-                                        "net.smallacademy.android.fileprovider",
+                                        "com.example.rurbansoft.fileprovider",
                                         photoFile);
                                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
@@ -174,6 +174,7 @@ public class CameraActivity extends AppCompatActivity
         progressDialog.setCanceledOnTouchOutside(false);
         userId=fAuth.getCurrentUser().getUid();
         email=fAuth.getCurrentUser().getEmail();
+
         DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
         Map<String, Object> workItem=new HashMap<>();
         uploadPic(imageuri);
@@ -234,11 +235,6 @@ public class CameraActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-//            Bitmap photo = (Bitmap) data.getExtras().get("data");
-//            captureImage.setImageBitmap(photo);
-//            Uri imageuri = data.getData();
-//            Log.e("image uri","data:"+data);
-//            Log.e("image uri","url:"+imageuri);
             File f = new File(currentPhotoPath);
             captureImage.setImageURI(Uri.fromFile(f));
             imageuri = Uri.fromFile(f);
@@ -297,10 +293,8 @@ public class CameraActivity extends AppCompatActivity
         }
     }
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -308,7 +302,6 @@ public class CameraActivity extends AppCompatActivity
                 storageDir      /* directory */
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
         Log.e("currentPhotopath", currentPhotoPath);
         return image;
@@ -320,9 +313,12 @@ public class CameraActivity extends AppCompatActivity
         {
             FirebaseStorage storage = FirebaseStorage.getInstance();
 
-            StorageReference storageRef=storage.getReference(userId).child(timeStamp);
+//            StorageReference storageRef=storage.getReference(userId).child(timeStamp);
+//
+//            StorageReference fileReference = storageRef.child(userId+timeStamp);
+            StorageReference storageRef=storage.getReference(userId);
 
-            StorageReference fileReference = storageRef.child(userId+timeStamp);
+            StorageReference fileReference = storageRef.child(timeStamp);
             fileReference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
