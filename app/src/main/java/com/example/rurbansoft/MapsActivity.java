@@ -39,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
@@ -48,7 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseFirestore fStore;
-    String userId;
+    String userId, infoMarker;
     String state, district, cluster, gp, component, sub_component, phase, workStatus, timeStamp;
     int counter;
 
@@ -67,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fStore = FirebaseFirestore.getInstance();
         fUser = fAuth.getCurrentUser();
         userId = fUser.getUid();
+
     }
 
 
@@ -76,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
+        mMap.setInfoWindowAdapter(this);
         // code for setting map to a point
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(6);
@@ -92,10 +95,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 int j = 0;
                 for (DocumentSnapshot wi : workItems) {
                     counter++;
-                    LatLng coordinate = new LatLng(Double.valueOf(wi.get("Latitude").toString()), Double.valueOf(wi.get("Longitude").toString()));
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-                    j++;
                     state = wi.get("State").toString();
                     district = wi.get("District").toString();
                     cluster= wi.get("Cluster").toString();
@@ -105,6 +104,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     phase = wi.get("Phase").toString();
                     workStatus= wi.get("WorkStatus").toString();
                     timeStamp=wi.get("timeStamp").toString();
+                    infoMarker="State: "+state+"\nDistrict: "+district+"\nCluster: "+cluster;
+
+                    LatLng coordinate = new LatLng(Double.valueOf(wi.get("Latitude").toString()), Double.valueOf(wi.get("Longitude").toString()));
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate));
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                    j++;
+                    marker.showInfoWindow();
                 }
                 AlertDialog.Builder a_builder = new AlertDialog.Builder(MapsActivity.this);
                 a_builder.setMessage(j + " Valid Record Found ")
@@ -125,17 +131,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
-//        Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(26, 81);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Nullable
     @Override
     public View getInfoWindow(@NonNull Marker marker) {
         return null;
+        //return prepareInfoView(marker);
     }
 
     @Nullable
@@ -145,7 +147,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return prepareInfoView(marker);
     }
     private View prepareInfoView(Marker marker) {
-
         LinearLayout infoView = new LinearLayout(MapsActivity.this);
         LinearLayout.LayoutParams infoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         infoView.setOrientation(LinearLayout.HORIZONTAL);
@@ -153,34 +154,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ImageView infoImageView = new ImageView(MapsActivity.this);
 
-//
-//        DatabaseHelper myDB = new DatabaseHelper(this);
-//        //long i = myDB.getCount();
-//        // long id = Long.getLong( marker.getTitle());
-//        String id = marker.getTitle();
-//        Cursor cursor = myDB.getImage(id);
-
-        // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
 
-//        Bitmap bitmap = BitmapFactory.decodeByteArray(img, 0, img.length, bmOptions);
-//
-//        int photoW = bmOptions.outWidth;
-//        int photoH = bmOptions.outHeight;
-//
-//        int targetW = photoW / 4; //image to reduce to 1/10 of original
-//        int targetH = photoH / 4;
-//
-//        // Determine how much to scale down the image
-//        //int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-//        bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//        Bitmap photo = Bitmap.createScaledBitmap(bitmap, targetW, targetH, false);
-//        //---------------------------//
-//
-//        infoImageView.setLayoutParams(infoViewParams);
-//        infoImageView.setImageBitmap(photo);
-//        infoView.addView(infoImageView);
 
         LinearLayout subInfoView = new LinearLayout(MapsActivity.this);
         LinearLayout.LayoutParams subInfoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -220,6 +196,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         infoView.addView(subInfoView);
 
         return infoView;
+
     }
 
 

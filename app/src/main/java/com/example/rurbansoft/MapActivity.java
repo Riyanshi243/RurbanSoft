@@ -1,11 +1,11 @@
 package com.example.rurbansoft;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,14 +33,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWindowAdapter, OnMapReadyCallback
+public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWindowAdapter, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener
 {
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
@@ -56,46 +59,50 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
     FirebaseFirestore fStore;
     String userId;
     int counter;
+    String state, district, cluster, gp, component, sub_component, phase, workStatus, timeStamp;
+    Uri ex;
+    ProgressDialog progressDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        //getLocationPermission();
+        getLocationPermission();
         fAuth=FirebaseAuth.getInstance();
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
+        progressDialog=new ProgressDialog(this);
     }
 
-//    private void getLocationPermission() {
-//        Log.d(TAG, "getLocationPermission: getting location permission");
-//        String[] permission = {android.Manifest.permission.ACCESS_FINE_LOCATION,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION};
-//
-//        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            if (ContextCompat.checkSelfPermission(this.getApplicationContext(), COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//            {
-//                mLocationPermissionGranted = true;
-//                initMap();
-//            }
-//            else
-//            {
-//                ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
-//            }
-//        }
-//        else
-//        {
-//            ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
-//        }
-//    }
-//
-//    private void initMap() {
-//        Log.d(TAG, "initMap: Intialising Map");
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(MapActivity.this);
-//    }
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: getting location permission");
+        String[] permission = {android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(), COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            {
+                mLocationPermissionGranted = true;
+                initMap();
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, permission, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void initMap() {
+        Log.d(TAG, "initMap: Intialising Map");
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(MapActivity.this);
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -103,6 +110,9 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
         Log.d(TAG, "onMapReady: Map is Ready");
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        progressDialog.setMessage("Please wait data is loaded");
+        progressDialog.setTitle("SEARCHING RECORDS");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         // code for setting map to a point
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
@@ -120,6 +130,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
             //mMap.setMyLocationEnabled(false);
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.setInfoWindowAdapter(this);
+            mMap.setOnInfoWindowClickListener(this);
         }
 
     }
@@ -133,14 +144,17 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
                 List<DocumentSnapshot> workItems = queryDocumentSnapshots.getDocuments();
                 int i=1;
                 int j=0;
+
                 for(DocumentSnapshot wi:workItems)
                 {
                     counter++;
+                    timeStamp=wi.get("timeStamp").toString();
                     LatLng coordinate = new LatLng(Double.valueOf(wi.get("Latitude").toString()), Double.valueOf(wi.get("Longitude").toString()));
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(timeStamp));
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                     j++;
                 }
+                progressDialog.dismiss();
                 AlertDialog.Builder a_builder = new AlertDialog.Builder(MapActivity.this);
                 a_builder.setMessage(j + " Valid Record Found ")
                         .setTitle("Records Found")
@@ -159,109 +173,136 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
                 Log.e("fetch","fetching data"+e.getMessage());
             }
         });
-
+        progressDialog.show();
     }
 
     @Override
     public View getInfoWindow(Marker marker) {
         return null;
-        //prepareInfoView(marker);
     }
 
     @Override
     public View getInfoContents(Marker marker) {
         return null;
-        //return prepareInfoView(marker);
     }
 
 
 
-//    //prepare InfoView programmatically
-//    private View prepareInfoView(Marker marker){
-//
-//        LinearLayout infoView = new LinearLayout(MapActivity.this);
-//        LinearLayout.LayoutParams infoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        infoView.setOrientation(LinearLayout.HORIZONTAL);
-//        infoView.setLayoutParams(infoViewParams);
-//
-//        ImageView infoImageView = new ImageView(MapActivity.this);
-//
-//        DatabaseHelper myDB = new DatabaseHelper(this);
-//        //long i = myDB.getCount();
-//        // long id = Long.getLong( marker.getTitle());
-//        String id = marker.getTitle();
-//        Cursor cursor = myDB.getImage(id);
-//
-//        //---------------------------//
-//        String state = cursor.getString(cursor.getColumnIndex("State"));
-//        String district = cursor.getString(cursor.getColumnIndex("DISTRICT"));
-//        String cluster= cursor.getString(cursor.getColumnIndex("CLUSTER"));
-//        String gp = cursor.getString(cursor.getColumnIndex("GP"));
-//        String components = cursor.getString(cursor.getColumnIndex("COMPONENTS"));
-//        String sub_components = cursor.getString(cursor.getColumnIndex("SUB_COMPONENTS"));
-//        String phase = cursor.getString(cursor.getColumnIndex("PHASE"));
-//        String comment = cursor.getString(cursor.getColumnIndex("COMMENT"))+marker.getTitle();
-//        byte[] img = cursor.getBlob(cursor.getColumnIndex("IMAGE"));
-//
-//        // Get the dimensions of the bitmap
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        bmOptions.inJustDecodeBounds = true;
-//
-//        Bitmap bitmap = BitmapFactory.decodeByteArray(img, 0, img.length, bmOptions);
-//
-//        int photoW = bmOptions.outWidth;
-//        int photoH = bmOptions.outHeight;
-//
-//        int targetW = photoW / 4; //image to reduce to 1/10 of original
-//        int targetH = photoH / 4;
-//
-//        // Determine how much to scale down the image
-//        //int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-//        bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//        Bitmap photo = Bitmap.createScaledBitmap(bitmap, targetW, targetH, false);
-//        //---------------------------//
-//
-//        infoImageView.setLayoutParams(infoViewParams);
-//        infoImageView.setImageBitmap(photo);
-//        infoView.addView(infoImageView);
-//
-//        LinearLayout subInfoView = new LinearLayout(MapActivity.this);
-//        LinearLayout.LayoutParams subInfoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        subInfoView.setOrientation(LinearLayout.VERTICAL);
-//        subInfoView.setLayoutParams(subInfoViewParams);
-//
-//        TextView subInfoState = new TextView(MapActivity.this);
-//        subInfoState.setText("State " + state);
-//        TextView subInfoDistrict= new TextView(MapActivity.this);
-//        subInfoDistrict.setText("District: " + district);
-//        TextView subInfoCluster = new TextView(MapActivity.this);
-//        subInfoCluster.setText("Cluster: " + cluster);
-//
-//        TextView subInfoGp = new TextView(MapActivity.this);
-//        subInfoGp.setText("GP: " + gp);
-//
-//        TextView subInfoComponents = new TextView(MapActivity.this);
-//        subInfoComponents.setText("Components: " + components);
-//
-//        TextView subInfoSubComponents= new TextView(MapActivity.this);
-//        subInfoSubComponents.setText("Sub_Components: " + sub_components);
-//
-//        TextView subInfoPhase= new TextView(MapActivity.this);
-//        subInfoPhase.setText("Phase: " + phase);
-//
-//        TextView subInfoComment= new TextView(MapActivity.this);
-//        subInfoComment.setText("Remark: " + comment);
-//
-//        subInfoView.addView(subInfoState);
-//        subInfoView.addView(subInfoDistrict);
-//        subInfoView.addView(subInfoCluster);
-//        subInfoView.addView(subInfoGp);
-//        subInfoView.addView(subInfoComponents);
-//        subInfoView.addView(subInfoSubComponents);
-//        subInfoView.addView(subInfoPhase);
-//        subInfoView.addView(subInfoComment);
-//        infoView.addView(subInfoView);
-//
-//        return infoView;
-//    }
+    private View prepareInfoView(Marker marker){
+
+        LinearLayout infoView = new LinearLayout(MapActivity.this);
+        infoView.setClickable(false);
+
+        LinearLayout.LayoutParams infoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        infoView.setOrientation(LinearLayout.HORIZONTAL);
+        infoView.setLayoutParams(infoViewParams);
+
+        TextView InfoState = new TextView(MapActivity.this);
+        InfoState.setText("State " + state);
+        ImageView infoImageView = new ImageView(MapActivity.this);
+        infoView.addView(InfoState);
+//        ImageView img=new ImageView(MapActivity.this);
+//        Glide.with(MapActivity.this)
+//                .load(R.drawable.nic_logo)
+//                .error(R.drawable.ic_baseline_camera_alt_24)
+//                .placeholder(R.drawable.ic_launcher_background)
+//                .into(img);
+//       // img.setImageResource(R.drawable.nic_logo);
+//        Log.e("ex", ex+" ");
+//        infoView.addView(img);
+
+
+        String timeUnique = marker.getTitle();
+        Log.e("timeUnique", timeUnique+" ");
+        infoImageView.setLayoutParams(infoViewParams);
+        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeUnique);
+
+        allWorkItem.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists())
+                {
+                    state = documentSnapshot.get("State").toString();
+                    district = documentSnapshot.get("District").toString()+documentSnapshot.get("Latitude").toString();
+                    cluster= documentSnapshot.get("Cluster").toString()+documentSnapshot.get("Longitude").toString();
+                    gp = documentSnapshot.get("Gram Panchayat").toString();
+                    component = documentSnapshot.get("Component").toString();
+                    sub_component = documentSnapshot.get("Sub_component").toString();
+                    phase = documentSnapshot.get("Phase").toString();
+                    workStatus= documentSnapshot.get("WorkStatus").toString();
+
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReference(userId).child(timeUnique);
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.e("timeUnique",uri.toString());
+                            ex=uri;
+                            infoImageView.setImageResource(R.drawable.nic_logo);
+                            Toast.makeText(MapActivity.this,"set image ",Toast.LENGTH_SHORT).show();
+
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MapActivity.this,"No image "+e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MapActivity.this,"Something went Wrong "+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        infoView.addView(infoImageView);
+
+        LinearLayout subInfoView = new LinearLayout(MapActivity.this);
+        LinearLayout.LayoutParams subInfoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        subInfoView.setOrientation(LinearLayout.VERTICAL);
+        subInfoView.setLayoutParams(subInfoViewParams);
+
+
+        TextView subInfoState = new TextView(MapActivity.this);
+        subInfoState.setText("State " + state);
+        TextView subInfoDistrict= new TextView(MapActivity.this);
+        subInfoDistrict.setText("District: " + district);
+        TextView subInfoCluster = new TextView(MapActivity.this);
+        subInfoCluster.setText("Cluster: " + cluster);
+        TextView subInfoGp = new TextView(MapActivity.this);
+        subInfoGp.setText("GP: " + gp);
+        TextView subInfoComponents = new TextView(MapActivity.this);
+        subInfoComponents.setText("Components: " + component);
+        TextView subInfoSubComponents= new TextView(MapActivity.this);
+        subInfoSubComponents.setText("Sub_Components: " + sub_component);
+        TextView subInfoPhase= new TextView(MapActivity.this);
+        subInfoPhase.setText("Phase: " + phase);
+        TextView subInfoComment= new TextView(MapActivity.this);
+        subInfoComment.setText("WorkStatus: " + workStatus);
+
+        subInfoView.addView(subInfoState);
+        subInfoView.addView(subInfoDistrict);
+        subInfoView.addView(subInfoCluster);
+        subInfoView.addView(subInfoGp);
+        subInfoView.addView(subInfoComponents);
+        subInfoView.addView(subInfoSubComponents);
+        subInfoView.addView(subInfoPhase);
+        subInfoView.addView(subInfoComment);
+        infoView.addView(subInfoView);
+
+        return infoView;
+    }
+
+    @Override
+    public void onInfoWindowClick(@NonNull Marker marker) {
+
+        Intent intent = new Intent(MapActivity.this, MarkerInfoMap.class);
+        intent.putExtra("timeStamp", marker.getTitle());
+        startActivity(intent);
+
+    }
 }

@@ -197,7 +197,7 @@ public class CameraActivity extends AppCompatActivity
             public void onSuccess(Void unused) {
                 progressDialog.dismiss();
                 Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CameraActivity.this, MapsActivity.class);
+                Intent intent = new Intent(CameraActivity.this, MapActivity.class);
                 startActivity(intent);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -311,9 +311,6 @@ public class CameraActivity extends AppCompatActivity
         {
             FirebaseStorage storage = FirebaseStorage.getInstance();
 
-//            StorageReference storageRef=storage.getReference(userId).child(timeStamp);
-//
-//            StorageReference fileReference = storageRef.child(userId+timeStamp);
             StorageReference storageRef=storage.getReference(userId);
 
             StorageReference fileReference = storageRef.child(timeStamp);
