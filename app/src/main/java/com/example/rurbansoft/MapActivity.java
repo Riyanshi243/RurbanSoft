@@ -116,7 +116,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
 
         // code for setting map to a point
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(3);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(6);
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
         if (mLocationPermissionGranted)
