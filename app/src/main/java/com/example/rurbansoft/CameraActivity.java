@@ -301,7 +301,7 @@ public class CameraActivity extends AppCompatActivity
         );
 
         currentPhotoPath = image.getAbsolutePath();
-        Log.e("currentPhotopath", currentPhotoPath);
+
         return image;
     }
 

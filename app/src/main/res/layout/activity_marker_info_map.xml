@@ -48,13 +48,13 @@
                 app:srcCompat="@drawable/ic_baseline_browser_updated_24" />
 
             <TableLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="40dp">
 
                 <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp">
 
                     <TextView
