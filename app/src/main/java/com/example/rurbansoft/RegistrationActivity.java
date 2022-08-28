@@ -2,13 +2,9 @@ package com.example.rurbansoft;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -84,34 +80,42 @@ public class RegistrationActivity extends AppCompatActivity {
         if(name_.length()==0)
         {
             name.setError("Enter Name");
+            name.requestFocus();
         }
         else if(designation_.length()==0)
         {
             designation.setError("Enter Designation");
+            designation.requestFocus();
         }
         else if(phone_.length()==0)
         {
             phone.setError("Enter Phone Number");
+            phone.requestFocus();
         }
         else if(phone_.length()<10 || phone_.length()>12  )
         {
             phone.setError("Enter valid Phone Number");
+            phone.requestFocus();
         }
         else if(email_.length()==0)
         {
             email.setError("Enter Email Id");
+            email.requestFocus();
         }
         else if (!email_.matches(emailPattern))
         {
             email.setError("Enter valid EmailId");
+            email.requestFocus();
         }
         else if(password_.length()==0)
         {
             password.setError("Enter Password");
+            password.requestFocus();
         }
         else if(password_.length()<8)
         {
             password.setError("Password must be at least 8 Characters");
+            password.requestFocus();
         }
 
         else{
@@ -144,12 +148,14 @@ public class RegistrationActivity extends AppCompatActivity {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                progressDialog.dismiss();
                                 Toast.makeText(RegistrationActivity.this,"Registration Failed",Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                     else
                     {
+                        progressDialog.dismiss();
                         Toast.makeText(RegistrationActivity.this,"Registration Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
 
                     }

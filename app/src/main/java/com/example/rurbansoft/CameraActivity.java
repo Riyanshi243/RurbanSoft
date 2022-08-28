@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,7 +55,7 @@ public class CameraActivity extends AppCompatActivity
     String state, district, cluster, gp, component, sub_component, phase, workStatus, userId, timeStamp, email, currentPhotoPath;;
     Button capture, retake, save;
     ImageView captureImage;
-    ProgressDialog progressDialog;
+    ProgressDialog progressDialog, progressDialog2;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseFirestore fStore;
@@ -65,6 +66,7 @@ public class CameraActivity extends AppCompatActivity
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     double lat, lon;
+    int status1=0, status2=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class CameraActivity extends AppCompatActivity
         retake=findViewById(R.id.retake);
         save=findViewById(R.id.save);
         progressDialog=new ProgressDialog(this);
+        progressDialog2=new ProgressDialog(this);
         fAuth=FirebaseAuth.getInstance();
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
@@ -93,7 +96,52 @@ public class CameraActivity extends AppCompatActivity
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
 
-        capture.setOnClickListener(new View.OnClickListener() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+
+        }
+        else {
+            if (statusOfGPS == true) {
+                @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
+
+                } else {
+                    AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
+                    a_builder.setMessage("Unable to fetch Location..!! Try again later")
+                            .setTitle("Network Error!!")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(Settings.ACTION_SETTINGS));
+                                }
+                            });
+                    a_builder.show();
+                }
+            } else {
+                AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
+                a_builder.setMessage("GPS is OFF, Turn it ON and Try again !..")
+                        .setTitle("GPS Error!!")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            }
+                        });
+                a_builder.show();
+            }
+        }
+
+            capture.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
@@ -195,18 +243,20 @@ public class CameraActivity extends AppCompatActivity
         allWorkItem.set(workItem).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                progressDialog.dismiss();
-                Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CameraActivity.this, MapActivity.class);
-                startActivity(intent);
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
                 Toast.makeText(CameraActivity.this,"WorkItem uploading failed",Toast.LENGTH_SHORT).show();
             }
         });
         progressDialog.show();
+        if(status1==1 && status2==1)
+        {
+
+        }
 
     }
 
@@ -281,7 +331,7 @@ public class CameraActivity extends AppCompatActivity
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
+                                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                                 }
                             });
                     a_builder.show();
@@ -309,6 +359,9 @@ public class CameraActivity extends AppCompatActivity
 
         if(imageuri!=null)
         {
+            progressDialog2.setMessage("Please wait while workItem image is uploaded");
+            progressDialog2.setTitle("WORK-ITEM");
+            progressDialog2.setCanceledOnTouchOutside(false);
             FirebaseStorage storage = FirebaseStorage.getInstance();
 
             StorageReference storageRef=storage.getReference(userId);
@@ -317,15 +370,25 @@ public class CameraActivity extends AppCompatActivity
             fileReference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
+                    status2=1;
+                    progressDialog2.dismiss();
+                    progressDialog.dismiss();
+                    Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CameraActivity.this, MapActivity.class);
+                    startActivity(intent);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog2.dismiss();
+                    progressDialog.dismiss();
                     Toast.makeText(CameraActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
                 }
             });
+            progressDialog2.show();
+
         }
+
         else
         {
             Toast.makeText(this,"No Image selected",Toast.LENGTH_LONG).show();

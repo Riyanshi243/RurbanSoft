@@ -6,14 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,8 +64,6 @@ public class MarkerInfoMap extends AppCompatActivity {
         allWorkItem.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-
                 if(documentSnapshot.exists())
                 {
                     state.setText(documentSnapshot.get("State").toString());
@@ -83,10 +82,12 @@ public class MarkerInfoMap extends AppCompatActivity {
                     storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            RequestOptions requestOptions = new RequestOptions();
+                            requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
                             Glide.with(MarkerInfoMap.this)
                                 .load(uri).diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .error(R.drawable.ic_baseline_error_24)
-                                .placeholder(R.drawable.ic_baseline_browser_updated_24)
+                                .placeholder(R.drawable.ic_baseline_browser_updated_24).apply(requestOptions)
                                 .into(image);
                             Toast.makeText(MarkerInfoMap.this,"set image ",Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();

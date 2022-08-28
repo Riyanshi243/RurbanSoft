@@ -3,10 +3,8 @@ package com.example.rurbansoft;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -77,34 +75,42 @@ public class MainActivity extends AppCompatActivity {
         if(state_.length()==0)
         {
             state.setError("Enter State");
+            state.requestFocus();
         }
         else if(district_.length()==0)
         {
             district.setError("Enter District");
+            district.requestFocus();
         }
         else if(cluster_.length()==0)
         {
             cluster.setError("Enter Cluster");
+            cluster.requestFocus();
         }
         else if(gp_.length()==0)
         {
             gp.setError("Enter Gram Panchayat");
+            gp.requestFocus();
         }
         else if(component_.length()==0)
         {
             component.setError("Enter Component");
+            component.requestFocus();
         }
         else if(sub_component_.length()==0)
         {
             sub_component.setError("Enter Sub Component");
+            sub_component.requestFocus();
         }
         else if(phase_.length()==0)
         {
             phase.setError("Enter Phase");
+            phase.requestFocus();
         }
         else if(workStatus_.length()==0)
         {
             workStatus.setError("Enter Work Status");
+            workStatus.requestFocus();
         }
         else
         {

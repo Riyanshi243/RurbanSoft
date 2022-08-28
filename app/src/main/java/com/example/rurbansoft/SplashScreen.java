@@ -1,13 +1,8 @@
 package com.example.rurbansoft;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.SQLException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
