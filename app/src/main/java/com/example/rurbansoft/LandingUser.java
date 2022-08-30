@@ -19,7 +19,7 @@ public class LandingUser extends AppCompatActivity {
 
         workItem=findViewById(R.id.workItem);
         map=findViewById(R.id.mapView);
-
+        //for adding new workitem
         workItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -27,7 +27,7 @@ public class LandingUser extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        //for viewing existing items on map
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,6 +38,8 @@ public class LandingUser extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
+
+        //logout feature
         AlertDialog.Builder alertbox = new AlertDialog.Builder(this)
                 .setMessage("Do you want to Logout?")
                 .setTitle("Logout ")

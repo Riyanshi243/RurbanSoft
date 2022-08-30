@@ -42,20 +42,20 @@
             <Button
                 android:id="@+id/workItem"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ADD NEW WORKITEM"
-                android:textSize="20dp"
+                android:layout_height="107dp"
                 android:layout_marginTop="60dp"
-                android:background="@drawable/roundedbutton"/>
+                android:background="@drawable/roundedbutton"
+                android:text="ADD NEW WORKITEM"
+                android:textSize="20dp" />
 
             <Button
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="VIEW EXISTING WORKITEMS ON MAP"
-                android:textSize="20dp"
+                android:layout_height="161dp"
                 android:layout_marginTop="40dp"
-                android:background="@drawable/roundedbutton"/>
+                android:background="@drawable/roundedbutton"
+                android:text="VIEW EXISTING WORKITEMS ON MAP"
+                android:textSize="20dp" />
 
 
         </LinearLayout>

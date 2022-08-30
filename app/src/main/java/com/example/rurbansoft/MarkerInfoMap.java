@@ -38,7 +38,7 @@ public class MarkerInfoMap extends AppCompatActivity {
         fStore=FirebaseFirestore.getInstance();
         fUser= FirebaseAuth.getInstance().getCurrentUser();
         String userId=FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+        //showing off all the details of selected work item
         state=findViewById(R.id.state);
         district=findViewById(R.id.district);
         cluster=findViewById(R.id.cluster);

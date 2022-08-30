@@ -10,13 +10,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -25,11 +23,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -92,10 +88,10 @@ public class CameraActivity extends AppCompatActivity
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
         storageReference = FirebaseStorage.getInstance().getReference();
-
+        //retake and save button to appear only when image is clicked
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
-
+        //location permission
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -205,6 +201,7 @@ public class CameraActivity extends AppCompatActivity
                     }
             }
         });
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -222,10 +219,10 @@ public class CameraActivity extends AppCompatActivity
         progressDialog.setCanceledOnTouchOutside(false);
         userId=fAuth.getCurrentUser().getUid();
         email=fAuth.getCurrentUser().getEmail();
-
+        //uploading data to firebase
         DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
         Map<String, Object> workItem=new HashMap<>();
-        uploadPic(imageuri);
+        uploadPic(imageuri);//uploading image to firebase
 
         workItem.put("Email",email);
         workItem.put("State",state );

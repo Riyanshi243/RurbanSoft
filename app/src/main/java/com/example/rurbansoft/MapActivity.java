@@ -6,16 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,7 +31,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -50,15 +39,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Target;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWindowAdapter, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener
@@ -66,7 +46,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
 
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private Boolean mLocationPermissionGranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -94,7 +73,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
     }
 
     private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: getting location permission");
         String[] permission = {android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -117,7 +95,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
     }
 
     private void initMap() {
-        Log.d(TAG, "initMap: Intialising Map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
     }
@@ -131,7 +108,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
         progressDialog.setTitle("SEARCHING RECORDS");
         progressDialog.setCanceledOnTouchOutside(false);
 
-        // code for setting map to a point
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(6);
         mMap.moveCamera(center);
@@ -144,7 +120,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
                     android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            //mMap.setMyLocationEnabled(false);
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.setInfoWindowAdapter(this);
             mMap.setOnInfoWindowClickListener(this);
@@ -193,11 +168,7 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
                             Thread thread = new Thread() {
                                 public void run() {
                                     try {
-                                        bitmap[0] = Picasso.get().load(uri).resize(100,100).get();
-//
-//                                        Log.e("bit" ,bitmap[0]+"");
-//                                        Log.e("LatLong",wi.get("Latitude").toString());
-//                                        Log.e("Marker", marker+"abs");
+                                        bitmap[0] = Picasso.get().load(uri).resize(100,100).rotate(90f).get();
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -261,123 +232,6 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
 
     }
 
-
-
-//    private View prepareInfoView(Marker marker){
-//
-//        LinearLayout infoView = new LinearLayout(MapActivity.this);
-//        infoView.setClickable(false);
-//
-//        LinearLayout.LayoutParams infoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        infoView.setOrientation(LinearLayout.HORIZONTAL);
-//        infoView.setLayoutParams(infoViewParams);
-//
-//        TextView InfoState = new TextView(MapActivity.this);
-//        ImageView infoImageView = new ImageView(MapActivity.this);
-//        infoView.addView(InfoState);
-////        ImageView img=new ImageView(MapActivity.this);
-////        Glide.with(MapActivity.this)
-////                .load(R.drawable.nic_logo)
-////                .error(R.drawable.ic_baseline_camera_alt_24)
-////                .placeholder(R.drawable.ic_launcher_background)
-////                .into(img);
-////       // img.setImageResource(R.drawable.nic_logo);
-////        Log.e("ex", ex+" ");
-////        infoView.addView(img);
-//
-//
-//        String timeUnique = marker.getTitle();
-//        infoImageView.setLayoutParams(infoViewParams);
-//        final String[] state = new String[1];
-//        final String[] district = new String[1];
-//        final String[] cluster = new String[1];
-//        final String[] gp = new String[1];
-//        final String[] component = new String[1];
-//        final String[] sub_component = new String[1];
-//        final String[] phase = new String[1];
-//        final String[] workStatus = new String[1];
-//
-//        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeUnique);
-//
-//        allWorkItem.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if(documentSnapshot.exists())
-//                {
-//                    state[0] = documentSnapshot.get("State").toString();
-//                    district[0] = documentSnapshot.get("District").toString();
-//                    cluster[0] = documentSnapshot.get("Cluster").toString();
-//                    gp[0] = documentSnapshot.get("Gram Panchayat").toString();
-//                    component[0] = documentSnapshot.get("Component").toString();
-//                    sub_component[0] = documentSnapshot.get("Sub_component").toString();
-//                    phase[0] = documentSnapshot.get("Phase").toString();
-//                    workStatus[0] = documentSnapshot.get("WorkStatus").toString();
-//
-//                    StorageReference storageReference = FirebaseStorage.getInstance().getReference(userId).child(timeUnique);
-//                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                        @Override
-//                        public void onSuccess(Uri uri) {
-//                            ex=uri;
-//                            infoImageView.setImageResource(R.drawable.nic_logo);
-//                            Toast.makeText(MapActivity.this,"set image ",Toast.LENGTH_SHORT).show();
-//
-//
-//                        }
-//                    }).addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Toast.makeText(MapActivity.this,"No image "+e.getMessage(),Toast.LENGTH_SHORT).show();
-//
-//                        }
-//                    });
-//
-//                }
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(MapActivity.this,"Something went Wrong "+e.getMessage(),Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        infoView.addView(infoImageView);
-//
-//        LinearLayout subInfoView = new LinearLayout(MapActivity.this);
-//        LinearLayout.LayoutParams subInfoViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        subInfoView.setOrientation(LinearLayout.VERTICAL);
-//        subInfoView.setLayoutParams(subInfoViewParams);
-//
-//
-//        TextView subInfoState = new TextView(MapActivity.this);
-//        subInfoState.setText("State " + state[0]);
-//        TextView subInfoDistrict= new TextView(MapActivity.this);
-//        subInfoDistrict.setText("District: " + district[0]);
-//        TextView subInfoCluster = new TextView(MapActivity.this);
-//        subInfoCluster.setText("Cluster: " + cluster[0]);
-//        TextView subInfoGp = new TextView(MapActivity.this);
-//        subInfoGp.setText("GP: " + gp[0]);
-//        TextView subInfoComponents = new TextView(MapActivity.this);
-//        subInfoComponents.setText("Components: " + component[0]);
-//        TextView subInfoSubComponents= new TextView(MapActivity.this);
-//        subInfoSubComponents.setText("Sub_Components: " + sub_component[0]);
-//        TextView subInfoPhase= new TextView(MapActivity.this);
-//        subInfoPhase.setText("Phase: " + phase[0]);
-//        TextView subInfoComment= new TextView(MapActivity.this);
-//        subInfoComment.setText("WorkStatus: " + workStatus[0]);
-//
-//        subInfoView.addView(subInfoState);
-//        subInfoView.addView(subInfoDistrict);
-//        subInfoView.addView(subInfoCluster);
-//        subInfoView.addView(subInfoGp);
-//        subInfoView.addView(subInfoComponents);
-//        subInfoView.addView(subInfoSubComponents);
-//        subInfoView.addView(subInfoPhase);
-//        subInfoView.addView(subInfoComment);
-//        infoView.addView(subInfoView);
-//
-//        return infoView;
-//    }
-
     @Override
     public void onInfoWindowClick(@NonNull Marker marker) {
 
@@ -386,7 +240,5 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
         startActivity(intent);
 
     }
-
-
 
 }

@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseFirestore fStore;
-    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
 
+        //save the entered details to move on to image capture. data will not be saved in database at this level.
         saveItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveWorkItem() {
+        //sending all the entered values to the next activity
         String state_=state.getText().toString().trim();
         String district_=district.getText().toString().trim();
         String cluster_=cluster.getText().toString().trim();

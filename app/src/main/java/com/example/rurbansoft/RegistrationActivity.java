@@ -71,6 +71,8 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void PerformAuth() {
+
+        //performing registration and storing details of user
         String name_=name.getText().toString().trim();
         String designation_=designation.getText().toString().trim();
         String phone_=phone.getText().toString().trim();
