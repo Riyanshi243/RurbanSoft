@@ -15,6 +15,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -38,6 +41,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -51,12 +55,13 @@ public class CameraActivity extends AppCompatActivity
     String state, district, cluster, gp, component, sub_component, phase, workStatus, userId, timeStamp, email, currentPhotoPath;;
     Button capture, retake, save;
     ImageView captureImage;
-    ProgressDialog progressDialog, progressDialog2;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseFirestore fStore;
     StorageReference storageReference;
+    ProgressDialog progressDialog;
     Uri imageuri;
+    DatabaseHelper myDB;
 
 
     private static final int CAMERA_REQUEST = 1888;
@@ -82,15 +87,22 @@ public class CameraActivity extends AppCompatActivity
         capture=findViewById(R.id.capture);
         retake=findViewById(R.id.retake);
         save=findViewById(R.id.save);
-        progressDialog=new ProgressDialog(this);
-        progressDialog2=new ProgressDialog(this);
         fAuth=FirebaseAuth.getInstance();
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
+        progressDialog = new ProgressDialog(this);
         storageReference = FirebaseStorage.getInstance().getReference();
         //retake and save button to appear only when image is clicked
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
+        myDB = new DatabaseHelper(this);
+
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+
+        }
         //location permission
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -210,49 +222,139 @@ public class CameraActivity extends AppCompatActivity
         });
 
     }
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        currentPhotoPath = image.getAbsolutePath();
+
+        return image;
+    }
 
     private void saveWorkItem() {
         Date t= Calendar.getInstance().getTime();
         timeStamp=t.toString();
-        progressDialog.setMessage("Please wait while workItem is uploaded");
+        progressDialog.setMessage("Please wait while workItem image is uploaded");
         progressDialog.setTitle("WORK-ITEM");
         progressDialog.setCanceledOnTouchOutside(false);
-        userId=fAuth.getCurrentUser().getUid();
-        email=fAuth.getCurrentUser().getEmail();
-        //uploading data to firebase
-        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
-        Map<String, Object> workItem=new HashMap<>();
-        uploadPic(imageuri);//uploading image to firebase
+        Toast.makeText(CameraActivity.this,"WorkItem is uploading.. Please wait",Toast.LENGTH_LONG).show();
 
-        workItem.put("Email",email);
-        workItem.put("State",state );
-        workItem.put("District", district);
-        workItem.put("Cluster",cluster);
-        workItem.put("Gram Panchayat",gp);
-        workItem.put("Component",component);
-        workItem.put("Sub_component",sub_component);
-        workItem.put("Phase",phase);
-        workItem.put("WorkStatus",workStatus);
-        workItem.put("Latitude",lat);
-        workItem.put("Longitude",lon);
-        workItem.put("timeStamp", timeStamp);
 
-        allWorkItem.set(workItem).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
+//        //uploading data to firebase
+//        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
+//        Map<String, Object> workItem=new HashMap<>();
+//        uploadPic(imageuri);//uploading image to firebase
+//
+//        workItem.put("Email",email);
+//        workItem.put("State",state );
+//        workItem.put("District", district);
+//        workItem.put("Cluster",cluster);
+//        workItem.put("Gram Panchayat",gp);
+//        workItem.put("Component",component);
+//        workItem.put("Sub_component",sub_component);
+//        workItem.put("Phase",phase);
+//        workItem.put("WorkStatus",workStatus);
+//        workItem.put("Latitude",lat);
+//        workItem.put("Longitude",lon);
+//        workItem.put("timeStamp", timeStamp);
+//
+//        allWorkItem.set(workItem).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void unused) {
+//
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                progressDialog.dismiss();
+//                Toast.makeText(CameraActivity.this,"WorkItem uploading failed",Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
-                Toast.makeText(CameraActivity.this,"WorkItem uploading failed",Toast.LENGTH_SHORT).show();
-            }
-        });
-        progressDialog.show();
-        if(status1==1 && status2==1)
+        int targetW = captureImage.getWidth();
+        int targetH = captureImage.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // createa matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(photoW/targetW, photoH/targetH);
+        // rotate the Bitmap
+        matrix.postRotate(90);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap photo = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+
+        //saving values to Database
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        myDB = new DatabaseHelper(this);
+
+        boolean insertedData = myDB.insertData(state,district,cluster,gp,component,sub_component,phase,lat,lon,workStatus,timeStamp,byteArray);
+
+
+        if(insertedData   == true)
         {
+            AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
+            a_builder.setMessage("Click YES to view workitem on map!..")
+                    .setTitle("Workitem Updated!!")
+                    .setCancelable(false)
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dialog.cancel();
+                            Intent intent = new Intent(CameraActivity.this,MapsActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent(CameraActivity.this,MainActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+            a_builder.show();
 
+        }
+        else {
+            Toast.makeText(CameraActivity.this, "Error Please Try Again!!", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
+            a_builder.setMessage("Something went Wrong Try Again Later!..")
+                    .setTitle("Workitem Not Updated!!")
+                    .setCancelable(false)
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dialog.cancel();
+                            finish();
+                        }
+                    });
+
+            a_builder.show();
         }
 
     }
@@ -337,59 +439,46 @@ public class CameraActivity extends AppCompatActivity
             }
         }
     }
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
 
-        currentPhotoPath = image.getAbsolutePath();
 
-        return image;
-    }
-
-    public void uploadPic(Uri imageuri) {
-
-        if(imageuri!=null)
-        {
-            progressDialog2.setMessage("Please wait while workItem image is uploaded");
-            progressDialog2.setTitle("WORK-ITEM");
-            progressDialog2.setCanceledOnTouchOutside(false);
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-
-            StorageReference storageRef=storage.getReference(userId);
-
-            StorageReference fileReference = storageRef.child(timeStamp);
-            fileReference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    status2=1;
-                    progressDialog2.dismiss();
-                    progressDialog.dismiss();
-                    Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(CameraActivity.this, MapActivity.class);
-                    startActivity(intent);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog2.dismiss();
-                    progressDialog.dismiss();
-                    Toast.makeText(CameraActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
-                }
-            });
-            progressDialog2.show();
-
-        }
-
-        else
-        {
-            Toast.makeText(this,"No Image selected",Toast.LENGTH_LONG).show();
-        }
-
-    }
+//    public void uploadPic(Uri imageuri) {
+//
+//        if(imageuri!=null)
+//        {
+//            progressDialog2.setMessage("Please wait while workItem image is uploaded");
+//            progressDialog2.setTitle("WORK-ITEM");
+//            progressDialog2.setCanceledOnTouchOutside(false);
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//            StorageReference storageRef=storage.getReference(userId);
+//
+//            StorageReference fileReference = storageRef.child(timeStamp);
+//            fileReference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    status2=1;
+//                    progressDialog2.dismiss();
+//                    progressDialog.dismiss();
+//                    Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
+//                    Intent intent = new Intent(CameraActivity.this, MapActivity.class);
+//                    startActivity(intent);
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    progressDialog2.dismiss();
+//                    progressDialog.dismiss();
+//                    Toast.makeText(CameraActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+//                }
+//            });
+//            progressDialog2.show();
+//
+//        }
+//
+//        else
+//        {
+//            Toast.makeText(this,"No Image selected",Toast.LENGTH_LONG).show();
+//        }
+//
+//    }
 }

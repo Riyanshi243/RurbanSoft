@@ -44,17 +44,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="2dp"
-                android:text="Enter your Registered EmailId"
+                android:text="Enter your Registered Phone Number"
                 android:textSize="20dp" />
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/phno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:hint="Registered EmailID"
-                android:inputType="textEmailAddress"
+                android:hint="Registered Phone Number"
+                android:inputType="number"
                 android:text="" />
 
             <TextView
@@ -74,24 +74,12 @@
                 android:inputType="textPassword"
                 android:text="" />
 
-            <TextView
-                android:id="@+id/forgetPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Forgot your Password?"
-                android:textColor="#348ccc"
-                android:textSize="16dp" />
-
             <Button
                 android:id="@+id/login"
                 android:layout_width="128dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/roundedbutton"
                 android:text="Login" />

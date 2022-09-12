@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -28,27 +29,29 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
+
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText email,password;
+    EditText phno,password;
     Button login;
     TextView register,forgetPassword;
     ProgressDialog progressDialog;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     String userId;
+    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        email=findViewById(R.id.email);
+        phno=findViewById(R.id.phno);
         password=findViewById(R.id.password);
         login=findViewById(R.id.login);
         register=findViewById(R.id.register);
-        forgetPassword=findViewById(R.id.forgetPassword);
 
         progressDialog=new ProgressDialog(this);
         fAuth=FirebaseAuth.getInstance();
@@ -57,7 +60,8 @@ public class LoginActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
         }
         else{
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -84,30 +88,26 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        forgetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checkInternetConenction())
-                    forgetPassword(view);
-            }
-        });
+
 
     }
 
+
+
     private void PerformLogin() {
-        String email_=email.getText().toString().trim();
+        String phno_=phno.getText().toString().trim();
         String password_=password.getText().toString().trim();
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
-        if(email_.length()==0)
+        if(phno_.length()==0)
         {
-            email.setError("Enter Email Id");
-            email.requestFocus();
+            phno.setError("Enter Phone Number");
+            phno.requestFocus();
         }
-        else if (!email_.matches(emailPattern))
+        else if(phno_.length()<10 || phno_.length()>12  )
         {
-            email.setError("Enter valid EmailId");
-            email.requestFocus();
+            phno.setError("Enter valid Phone Number");
+            phno.requestFocus();
         }
         else if(password_.length()==0)
         {
@@ -125,62 +125,40 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setTitle("LOGIN");
             progressDialog.setCanceledOnTouchOutside(false);
 
-            fAuth.signInWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful())
-                    {
-                        progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_SHORT).show();
-                        userId=fAuth.getCurrentUser().getUid();
-                        Intent intent = new Intent(LoginActivity.this, LandingUser.class);
-                        startActivity(intent);
-                        LoginActivity.this.finish();
-                    }
-                    else
-                    {
-                        progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this,"Login Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
+//            fAuth.signInWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AuthResult> task) {
+//                    if(task.isSuccessful())
+//                    {
+//                        progressDialog.dismiss();
+//                        Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_SHORT).show();
+//                        userId=fAuth.getCurrentUser().getUid();
+//                        Intent intent = new Intent(LoginActivity.this, LandingUser.class);
+//                        startActivity(intent);
+//                        LoginActivity.this.finish();
+//                    }
+//                    else
+//                    {
+//                        progressDialog.dismiss();
+//                        Toast.makeText(LoginActivity.this,"Login Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                }
+//            });
 
-                    }
-                }
-            });
-            progressDialog.show();
+            myDB = new DatabaseHelper(this);
+            boolean result = myDB.checkLogin(phno_,password_);
+            if(result == true){
+                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                Intent intent  = new Intent(LoginActivity.this,LandingUser.class);
+                startActivity(intent);
+                LoginActivity.this.finish();
+            }
+            else{
+                Toast.makeText(LoginActivity.this, "Something went Wrong try again later", Toast.LENGTH_LONG).show();
+            }
+
         }
-    }
-    public void forgetPassword(View v)
-    {
-        EditText resetMail = new EditText(v.getContext());
-        resetMail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        resetMail.requestFocus();
-        AlertDialog.Builder passres=new AlertDialog.Builder(v.getContext());
-        passres.setTitle("Reset Password?");
-        passres.setMessage("Enter your E-mail to reset password.");
-        passres.setView(resetMail);
-        passres.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String mail=resetMail.getText().toString().trim();
-                fAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(LoginActivity.this,"Reset link sent to your E-mail",Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this,"Error! Reset Link not sent. Please Try again "+e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-        passres.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //close dialog
-            }
-        });
-        passres.create().show();
     }
     @SuppressLint("MissingPermission")
     private boolean checkInternetConenction() {

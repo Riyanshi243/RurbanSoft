@@ -35,6 +35,7 @@ public class RegistrationActivity extends AppCompatActivity {
     FirebaseUser fUser;
     FirebaseFirestore fStore;
     String userId;
+    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class RegistrationActivity extends AppCompatActivity {
         fAuth=FirebaseAuth.getInstance();
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
+        myDB = new DatabaseHelper(this);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,44 +127,56 @@ public class RegistrationActivity extends AppCompatActivity {
             progressDialog.setTitle("REGISTRATION");
             progressDialog.setCanceledOnTouchOutside(false);
 
-            fAuth.createUserWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful())
-                    {
-                        userId=fAuth.getCurrentUser().getUid();
-                        DocumentReference allUserData=fStore.collection("users").document(userId);
-                        Map<String, Object> users=new HashMap<>();
-
-                        users.put("Email",email_);
-                        users.put("Designation",designation_);
-                        users.put("Name",name_);
-                        users.put("Phone",phone_);
-                        allUserData.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                progressDialog.dismiss();
-                                Toast.makeText(RegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                                RegistrationActivity.this.finish();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressDialog.dismiss();
-                                Toast.makeText(RegistrationActivity.this,"Registration Failed",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    else
-                    {
-                        progressDialog.dismiss();
-                        Toast.makeText(RegistrationActivity.this,"Registration Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            });
+//            fAuth.createUserWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AuthResult> task) {
+//                    if(task.isSuccessful())
+//                    {
+//                        userId=fAuth.getCurrentUser().getUid();
+//                        DocumentReference allUserData=fStore.collection("users").document(userId);
+//                        Map<String, Object> users=new HashMap<>();
+//
+//                        users.put("Email",email_);
+//                        users.put("Designation",designation_);
+//                        users.put("Name",name_);
+//                        users.put("Phone",phone_);
+//                        allUserData.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void unused) {
+//                                progressDialog.dismiss();
+//                                Toast.makeText(RegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+//                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+//                                startActivity(intent);
+//                                RegistrationActivity.this.finish();
+//                            }
+//                        }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                progressDialog.dismiss();
+//                                Toast.makeText(RegistrationActivity.this,"Registration Failed",Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    }
+//                    else
+//                    {
+//                        progressDialog.dismiss();
+//                        Toast.makeText(RegistrationActivity.this,"Registration Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                }
+//            });
+            boolean result =  myDB.RegisterUser(name_,designation_, phone_,email_,password_);
+            if(result == true){
+                progressDialog.dismiss();
+                Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
+                Intent intent  = new Intent(RegistrationActivity.this,LoginActivity.class);
+                startActivity(intent);
+                RegistrationActivity.this.finish();
+            }
+            else{
+                progressDialog.dismiss();
+                Toast.makeText(RegistrationActivity.this, "Something went Wrong try again later", Toast.LENGTH_LONG).show();
+            }
             progressDialog.show();
         }
 

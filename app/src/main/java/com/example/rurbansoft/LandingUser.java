@@ -31,7 +31,7 @@ public class LandingUser extends AppCompatActivity {
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LandingUser.this, MapActivity.class);
+                Intent intent = new Intent(LandingUser.this, MapsActivity.class);
                 startActivity(intent);
             }
         });
