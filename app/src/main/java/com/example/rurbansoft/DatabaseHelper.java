@@ -140,7 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //getData is basically a getImage function
     public Cursor getImage(String id){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_WorkItem+" WHERE "+COL_1+" = "+id,null);
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_WorkItem+" WHERE "+COL_1+" = "+id, null);
         if(cursor.moveToFirst())
         {
             return cursor;
@@ -149,6 +149,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("TAG", "getImage: Error in getImage function");
         return null;
     }
+
+    public ArrayList<AllUsers> readUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_User, null);
+        ArrayList<AllUsers> userArrayList = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                userArrayList.add(new AllUsers(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return userArrayList;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         // this method is called to check if the table exists already.

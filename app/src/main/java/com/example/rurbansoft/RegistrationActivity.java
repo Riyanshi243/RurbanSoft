@@ -30,7 +30,6 @@ public class RegistrationActivity extends AppCompatActivity {
     EditText name, designation,phone,email,password;
     Button register;
     TextView login;
-    ProgressDialog progressDialog;
     FirebaseAuth fAuth;
     FirebaseUser fUser;
     FirebaseFirestore fStore;
@@ -49,7 +48,6 @@ public class RegistrationActivity extends AppCompatActivity {
         password=findViewById(R.id.password);
         register=findViewById(R.id.register);
         login=findViewById(R.id.login);
-        progressDialog=new ProgressDialog(this);
         fAuth=FirebaseAuth.getInstance();
         fStore=FirebaseFirestore.getInstance();
         fUser=fAuth.getCurrentUser();
@@ -123,9 +121,6 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         else{
-            progressDialog.setMessage("Please wait while registration is done");
-            progressDialog.setTitle("REGISTRATION");
-            progressDialog.setCanceledOnTouchOutside(false);
 
 //            fAuth.createUserWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 //                @Override
@@ -167,17 +162,15 @@ public class RegistrationActivity extends AppCompatActivity {
 //            });
             boolean result =  myDB.RegisterUser(name_,designation_, phone_,email_,password_);
             if(result == true){
-                progressDialog.dismiss();
                 Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
                 Intent intent  = new Intent(RegistrationActivity.this,LoginActivity.class);
                 startActivity(intent);
                 RegistrationActivity.this.finish();
             }
             else{
-                progressDialog.dismiss();
                 Toast.makeText(RegistrationActivity.this, "Something went Wrong try again later", Toast.LENGTH_LONG).show();
             }
-            progressDialog.show();
+
         }
 
     }

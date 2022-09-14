@@ -220,15 +220,16 @@ public class MapActivity extends AppCompatActivity implements GoogleMap.InfoWind
 
     @Override
     public View getInfoContents(Marker marker) {
-        View mkar=getLayoutInflater().inflate(R.layout.info_marker,null);
-
-        TextView time=mkar.findViewById(R.id.time);
-        TextView data=mkar.findViewById(R.id.data);
-
-        time.setText(marker.getTitle());
-        data.setText(marker.getSnippet());
-
-        return mkar;
+//        View mkar=getLayoutInflater().inflate(R.layout.info_marker,null);
+//
+//        TextView time=mkar.findViewById(R.id.time);
+//        TextView data=mkar.findViewById(R.id.data);
+//
+//        time.setText(marker.getTitle());
+//        data.setText(marker.getSnippet());
+//
+//        return mkar;
+        return null;
 
     }
 

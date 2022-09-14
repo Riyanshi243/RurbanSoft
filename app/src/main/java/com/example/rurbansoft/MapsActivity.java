@@ -91,7 +91,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
 
         // code for setting map to a point
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(20.5937, 78.9629));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(3);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(5);
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
         if (mLocationPermissionGranted)
@@ -115,6 +115,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         int j=0;
         for (LatLng ll : lls) {
             LatLng coordinate = new LatLng(ll.latitude, ll.longitude);
+
             Log.e("latlong", coordinate.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));

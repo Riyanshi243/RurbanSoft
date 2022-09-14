@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -307,8 +308,16 @@ public class CameraActivity extends AppCompatActivity
         //saving values to Database
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        photo.compress(Bitmap.CompressFormat.PNG, 10, stream);
+
         byte[] byteArray = stream.toByteArray();
+        Log.e("bytes",byteArray.length +" ");
+
+        if(byteArray.length>4089446)
+        {
+            Toast.makeText(CameraActivity.this, "Error!! Image too large to save. Please try again..", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         myDB = new DatabaseHelper(this);
 

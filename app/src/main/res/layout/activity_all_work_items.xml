@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LandingUser">
-
+    tools:context=".AllWorkItems">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,46 +27,19 @@
                 app:srcCompat="@drawable/nic_logo" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:layout_marginBottom="40dp"
-                android:text="Welcome"
+                android:layout_marginBottom="20dp"
+                android:text="ALL WORKITEMS"
                 android:textColor="#348ccc"
                 android:textSize="40dp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/workItem"
-                android:layout_width="match_parent"
-                android:layout_height="107dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/roundedbutton"
-                android:text="ADD A NEW WORKITEM"
-                android:textSize="20dp" />
-
-            <Button
-                android:id="@+id/entriesView"
-                android:layout_width="match_parent"
-                android:layout_height="117dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/roundedbutton"
-                android:text="VIEW EXISTING WORKITEMS AS LIST AND MODIFY THEM"
-                android:textSize="20dp" />
-
-            <Button
-                android:id="@+id/mapView"
-                android:layout_width="match_parent"
-                android:layout_height="117dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/roundedbutton"
-                android:text="VIEW EXISTING WORKITEMS ON MAP"
-                android:textSize="20dp"
-                android:layout_marginBottom="50dp"/>
-
 
         </LinearLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

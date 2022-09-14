@@ -11,7 +11,7 @@ import android.widget.Button;
 
 public class LandingUser extends AppCompatActivity {
 
-    Button workItem, map;
+    Button workItem, map, entriesView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +19,7 @@ public class LandingUser extends AppCompatActivity {
 
         workItem=findViewById(R.id.workItem);
         map=findViewById(R.id.mapView);
+        entriesView=findViewById(R.id.entriesView);
         //for adding new workitem
         workItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +33,13 @@ public class LandingUser extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LandingUser.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
+        entriesView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LandingUser.this, AllWorkItems.class);
                 startActivity(intent);
             }
         });

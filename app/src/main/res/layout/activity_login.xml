@@ -89,10 +89,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="20dp"
                 android:text="New here?  Register"
                 android:textColor="#348ccc"
                 android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/existingUsers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/roundedbutton"
+                android:text="VIEW ALL EXISTING USERS" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

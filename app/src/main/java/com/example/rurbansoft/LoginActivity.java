@@ -35,13 +35,14 @@ import java.io.File;
 public class LoginActivity extends AppCompatActivity {
 
     EditText phno,password;
-    Button login;
+    Button login, existingUsers;
     TextView register,forgetPassword;
-    ProgressDialog progressDialog;
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
-    String userId;
+//    ProgressDialog progressDialog;
+//    FirebaseAuth fAuth;
+//    FirebaseUser fUser;
+//    String userId;
     DatabaseHelper myDB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         password=findViewById(R.id.password);
         login=findViewById(R.id.login);
         register=findViewById(R.id.register);
-
-        progressDialog=new ProgressDialog(this);
-        fAuth=FirebaseAuth.getInstance();
-        fUser=fAuth.getCurrentUser();
+        existingUsers=findViewById(R.id.existingUsers);
+//
+//        progressDialog=new ProgressDialog(this);
+//        fAuth=FirebaseAuth.getInstance();
+//        fUser=fAuth.getCurrentUser();
 
         if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
@@ -88,7 +90,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
+        existingUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, ViewUsers.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -97,7 +105,6 @@ public class LoginActivity extends AppCompatActivity {
     private void PerformLogin() {
         String phno_=phno.getText().toString().trim();
         String password_=password.getText().toString().trim();
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         if(phno_.length()==0)
         {
@@ -121,9 +128,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         else{
-            progressDialog.setMessage("Please wait while credentials are validated");
-            progressDialog.setTitle("LOGIN");
-            progressDialog.setCanceledOnTouchOutside(false);
+//            progressDialog.setMessage("Please wait while credentials are validated");
+//            progressDialog.setTitle("LOGIN");
+//            progressDialog.setCanceledOnTouchOutside(false);
 
 //            fAuth.signInWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 //                @Override
@@ -155,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.finish();
             }
             else{
-                Toast.makeText(LoginActivity.this, "Something went Wrong try again later", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "User Not found, Please Register first..", Toast.LENGTH_LONG).show();
             }
 
         }
