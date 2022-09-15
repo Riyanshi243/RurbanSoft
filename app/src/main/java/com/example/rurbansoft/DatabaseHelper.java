@@ -47,6 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context,DB_NAME, null, DB_VERSION);
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -150,6 +151,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public Cursor getImageT(String timeStamp){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_WorkItem+" WHERE "+COL_13+" = "+timeStamp, null);
+        if(cursor.moveToFirst())
+        {
+            return cursor;
+        }
+        else
+            Log.d("TAG", "getImage: Error in getImage function");
+        return null;
+    }
+
     public ArrayList<AllUsers> readUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_User, null);
@@ -162,6 +175,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return userArrayList;
+    }
+
+
+    public ArrayList<AllWorkItems> readWorkItems() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WorkItem, null);
+        ArrayList<AllWorkItems> workItemArrayList = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                workItemArrayList.add(new AllWorkItems(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),
+                        cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(12)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return workItemArrayList;
     }
 
     @Override

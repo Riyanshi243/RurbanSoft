@@ -40,7 +40,7 @@ public class AllUsers {
         this.Email = Email;
     }
 
-        public int getId() {
+    public int getId() {
         return id;
     }
 

@@ -15,7 +15,6 @@ public class ViewUsers extends AppCompatActivity {
     private DatabaseHelper myDB;
     private UserAdapter userAdapter;
     private RecyclerView userRV;
-    TextView total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

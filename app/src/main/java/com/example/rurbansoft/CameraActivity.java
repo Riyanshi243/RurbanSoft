@@ -308,7 +308,7 @@ public class CameraActivity extends AppCompatActivity
         //saving values to Database
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.PNG, 10, stream);
+        photo.compress(Bitmap.CompressFormat.PNG, 0, stream);
 
         byte[] byteArray = stream.toByteArray();
         Log.e("bytes",byteArray.length +" ");

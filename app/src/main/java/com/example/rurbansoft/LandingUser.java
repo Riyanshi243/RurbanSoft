@@ -39,7 +39,7 @@ public class LandingUser extends AppCompatActivity {
         entriesView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LandingUser.this, AllWorkItems.class);
+                Intent intent = new Intent(LandingUser.this, ViewWorkItems.class);
                 startActivity(intent);
             }
         });

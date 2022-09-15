@@ -49,7 +49,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_maps);
         getLocationPermission();
     }
 
