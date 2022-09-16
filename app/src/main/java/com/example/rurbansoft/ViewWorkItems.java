@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,9 +13,11 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -26,10 +29,7 @@ import java.util.List;
 
 public class ViewWorkItems extends AppCompatActivity {
 
-    private ArrayList<AllWorkItems> workItemArrayList;
     private DatabaseHelper myDB;
-    private WorkItemAdapter workItemAdapter;
-    private RecyclerView workItemRV;
     LinearLayout ll;
 
     @Override
@@ -37,16 +37,8 @@ public class ViewWorkItems extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_work_items);
 
-       // workItemArrayList = new ArrayList<>();
         myDB = new DatabaseHelper(this);
-
-//        workItemArrayList = myDB.readWorkItems();
-//        workItemAdapter = new WorkItemAdapter(workItemArrayList, ViewWorkItems.this);
-//        workItemRV = findViewById(R.id.users);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ViewWorkItems.this, RecyclerView.VERTICAL, false);
-//        workItemRV.setLayoutManager(linearLayoutManager);
-//        workItemRV.setAdapter(workItemAdapter);
-          ll=findViewById(R.id.ll);
+        ll=findViewById(R.id.ll);
 
 
         List<LatLng> lls = myDB.getLatLng();
@@ -57,16 +49,7 @@ public class ViewWorkItems extends AppCompatActivity {
             Log.e("latlong", coordinate.toString());
             prepareInfoView(String.valueOf(i++));
 
-//            Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
-//            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             j++;
-//            ll.post(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//
-//                }
-//            });
         }
 
 
@@ -94,6 +77,7 @@ public class ViewWorkItems extends AppCompatActivity {
         @SuppressLint("Range") String components = cursor.getString(cursor.getColumnIndex("COMPONENTS"));
         @SuppressLint("Range") String sub_components = cursor.getString(cursor.getColumnIndex("SUB_COMPONENTS"));
         @SuppressLint("Range") String phase = cursor.getString(cursor.getColumnIndex("PHASE"));
+        @SuppressLint("Range") String status = cursor.getString(cursor.getColumnIndex("STATUS"));
         @SuppressLint("Range") byte[] img = cursor.getBlob(cursor.getColumnIndex("IMAGE"));
         @SuppressLint("Range") String TIME  = cursor.getString(cursor.getColumnIndex("DATE_TIME"));
         @SuppressLint("Range") double lat  = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
@@ -109,8 +93,8 @@ public class ViewWorkItems extends AppCompatActivity {
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
-        int targetW = photoW / 4; //image to reduce to 1/10 of original
-        int targetH = photoH / 4;
+        int targetW = photoW / 3; //image to reduce to 1/10 of original
+        int targetH = photoH / 3;
 
         bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
         Matrix matrix = new Matrix();
@@ -145,10 +129,26 @@ public class ViewWorkItems extends AppCompatActivity {
         subInfoSubComponents.setText("Sub Components: " + sub_components);
         TextView subInfoPhase= new TextView(ViewWorkItems.this);
         subInfoPhase.setText("Phase: " + phase);
+        TextView subInfoStatus= new TextView(ViewWorkItems.this);
+        subInfoStatus.setText("Status: " + status);
         TextView subInfoLat= new TextView(ViewWorkItems.this);
         subInfoLat.setText("Latitude: " + lat);
         TextView subInfoLon= new TextView(ViewWorkItems.this);
         subInfoLon.setText("Longitude: " + lon);
+
+        Button delete =new Button(ViewWorkItems.this);
+        delete.setText("DELETE");
+
+//        delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                myDB.deleteItem(TIME);
+//                Toast.makeText(ViewWorkItems.this, "Deleted the Item", Toast.LENGTH_SHORT).show();
+//                Intent i = new Intent(ViewWorkItems.this, LandingUser.class);
+//                startActivity(i);
+//            }
+//        });
+
 
         subInfoView.addView(subInfoTime);
         subInfoView.addView(subInfoState);
@@ -158,9 +158,12 @@ public class ViewWorkItems extends AppCompatActivity {
         subInfoView.addView(subInfoComponents);
         subInfoView.addView(subInfoSubComponents);
         subInfoView.addView(subInfoPhase);
+        subInfoView.addView(subInfoStatus);
         subInfoView.addView(subInfoLat);
         subInfoView.addView(subInfoLon);
+        subInfoView.addView(delete);
         infoView.addView(subInfoView);
+        infoView.setPadding(0,10,0,40);
 
         ll.addView(infoView);
     }

@@ -1,5 +1,7 @@
 package com.example.rurbansoft;
 
+import static com.google.firestore.v1.StructuredQuery.CompositeFilter.Operator.AND;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -150,17 +152,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("TAG", "getImage: Error in getImage function");
         return null;
     }
+    public void deleteItem(String timeStamp) {
 
-    public Cursor getImageT(String timeStamp){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_WorkItem+" WHERE "+COL_13+" = "+timeStamp, null);
-        if(cursor.moveToFirst())
-        {
-            return cursor;
-        }
-        else
-            Log.d("TAG", "getImage: Error in getImage function");
-        return null;
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_WorkItem, "DATE_TIME=?", new String[]{timeStamp});
+        db.close();
     }
 
     public ArrayList<AllUsers> readUsers() {
@@ -178,20 +174,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<AllWorkItems> readWorkItems() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WorkItem, null);
-        ArrayList<AllWorkItems> workItemArrayList = new ArrayList<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                workItemArrayList.add(new AllWorkItems(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),
-                        cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(12)));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return workItemArrayList;
-    }
+//    public ArrayList<AllWorkItems> readWorkItems() {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WorkItem, null);
+//        ArrayList<AllWorkItems> workItemArrayList = new ArrayList<>();
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                workItemArrayList.add(new AllWorkItems(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),
+//                        cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(12)));
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//        return workItemArrayList;
+//    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {

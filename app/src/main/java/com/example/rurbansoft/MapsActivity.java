@@ -117,14 +117,8 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
             LatLng coordinate = new LatLng(ll.latitude, ll.longitude);
 
             Log.e("latlong", coordinate.toString());
-
             Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
-
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            //setting image on the marker icon
-            // marker.setIcon(BitmapDescriptorFactory.fromBitmap(myDB.getImage()));
-            //prepareInfoView(marker);
-            //Toast.makeText(this, "lat " + String.valueOf(ll.latitude) + " :: " + String.valueOf(ll.longitude), Toast.LENGTH_SHORT).show();
             j++;
         }
         // Toast.makeText(this, "Total Record found = " +  j, Toast.LENGTH_LONG).show();
@@ -170,6 +164,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         String id = marker.getTitle();
         Cursor cursor = myDB.getImage(id);
 
+
         //---------------------------//
         @SuppressLint("Range") String state = cursor.getString(cursor.getColumnIndex("STATE"));
         @SuppressLint("Range") String district = cursor.getString(cursor.getColumnIndex("DISTRICT"));
@@ -178,6 +173,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         @SuppressLint("Range") String components = cursor.getString(cursor.getColumnIndex("COMPONENTS"));
         @SuppressLint("Range") String sub_components = cursor.getString(cursor.getColumnIndex("SUB_COMPONENTS"));
         @SuppressLint("Range") String phase = cursor.getString(cursor.getColumnIndex("PHASE"));
+        @SuppressLint("Range") String status = cursor.getString(cursor.getColumnIndex("STATUS"));
         @SuppressLint("Range") byte[] img = cursor.getBlob(cursor.getColumnIndex("IMAGE"));
         @SuppressLint("Range") String TIME  = cursor.getString(cursor.getColumnIndex("DATE_TIME"));
         @SuppressLint("Range") double lat  = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
@@ -229,6 +225,8 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         subInfoSubComponents.setText("Sub Components: " + sub_components);
         TextView subInfoPhase= new TextView(MapsActivity.this);
         subInfoPhase.setText("Phase: " + phase);
+        TextView subInfoStatus= new TextView(MapsActivity.this);
+        subInfoStatus.setText("Status: " + status);
         TextView subInfoLat= new TextView(MapsActivity.this);
         subInfoLat.setText("Latitude: " + lat);
         TextView subInfoLon= new TextView(MapsActivity.this);
@@ -242,6 +240,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         subInfoView.addView(subInfoComponents);
         subInfoView.addView(subInfoSubComponents);
         subInfoView.addView(subInfoPhase);
+        subInfoView.addView(subInfoStatus);
         subInfoView.addView(subInfoLat);
         subInfoView.addView(subInfoLon);
         infoView.addView(subInfoView);
