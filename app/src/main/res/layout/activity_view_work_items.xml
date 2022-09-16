@@ -38,11 +38,18 @@
                 android:textSize="40dp"
                 android:textStyle="bold" />
 
-            <!--recycler view for displaying our courses-->
+            <LinearLayout
+                android:id="@+id/ll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"></LinearLayout>
+
+            <!--recycler view for displaying our courses
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/users"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent" />-->
+
 
 
         </LinearLayout>
