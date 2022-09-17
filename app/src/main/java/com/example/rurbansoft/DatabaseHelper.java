@@ -152,10 +152,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("TAG", "getImage: Error in getImage function");
         return null;
     }
+
     public void deleteItem(String timeStamp) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_WorkItem, "DATE_TIME=?", new String[]{timeStamp});
+        String tempTable="tempTable";
+        db.execSQL("create table " + tempTable + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, STATE TEXT, DISTRICT TEXT, CLUSTER TEXT,  GP TEXT," +
+                " COMPONENTS TEXT, SUB_COMPONENTS TEXT, STATUS TEXT, PHASE TEXT,LATITUDE DOUBLE," +
+                " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT)");
+
+        db.execSQL("INSERT INTO "+ tempTable+ "(STATE, DISTRICT,CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME) " +
+                "SELECT STATE, DISTRICT, CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME FROM "+ TABLE_WorkItem);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WorkItem);
+        db.execSQL("ALTER TABLE " + tempTable+"  RENAME TO "+ TABLE_WorkItem);
+
         db.close();
     }
 

@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -139,15 +141,31 @@ public class ViewWorkItems extends AppCompatActivity {
         Button delete =new Button(ViewWorkItems.this);
         delete.setText("DELETE");
 
-//        delete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                myDB.deleteItem(TIME);
-//                Toast.makeText(ViewWorkItems.this, "Deleted the Item", Toast.LENGTH_SHORT).show();
-//                Intent i = new Intent(ViewWorkItems.this, LandingUser.class);
-//                startActivity(i);
-//            }
-//        });
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                a_builder.setMessage("Are you sure you want to delete this workItem?")
+                        .setTitle("Delete WorkItem")
+                        .setCancelable(false)
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                myDB.deleteItem(TIME);
+                                Toast.makeText(ViewWorkItems.this, "Deleted the Item", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(ViewWorkItems.this, LandingUser.class);
+                                startActivity(i);
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                a_builder.show();
+
+            }
+        });
 
 
         subInfoView.addView(subInfoTime);

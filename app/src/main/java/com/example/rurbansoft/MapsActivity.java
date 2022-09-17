@@ -117,11 +117,11 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
             LatLng coordinate = new LatLng(ll.latitude, ll.longitude);
 
             Log.e("latlong", coordinate.toString());
+
             Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             j++;
         }
-        // Toast.makeText(this, "Total Record found = " +  j, Toast.LENGTH_LONG).show();
         AlertDialog.Builder a_builder = new AlertDialog.Builder(MapsActivity.this);
         a_builder.setMessage(j + " Valid Record Found ")
                 .setTitle("Records Found")
