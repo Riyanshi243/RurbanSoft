@@ -19,8 +19,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,12 +36,10 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
 
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private Boolean mLocationPermissionGranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final float DEFAULT_ZOOM = 15f;
 
 
     @Override
@@ -146,9 +142,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         return prepareInfoView(marker);
     }
 
-
-
-    //prepare InfoView programmatically
     private View prepareInfoView(Marker marker){
 
         LinearLayout infoView = new LinearLayout(MapsActivity.this);
@@ -159,8 +152,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         ImageView infoImageView = new ImageView(MapsActivity.this);
 
         DatabaseHelper myDB = new DatabaseHelper(this);
-        //long i = myDB.getCount();
-        // long id = Long.getLong( marker.getTitle());
         String id = marker.getTitle();
         Cursor cursor = myDB.getImage(id);
 

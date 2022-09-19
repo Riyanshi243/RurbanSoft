@@ -1,9 +1,7 @@
 package com.example.rurbansoft;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,28 +10,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     EditText name, designation,phone,email,password;
     Button register;
     TextView login;
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
-    FirebaseFirestore fStore;
-    String userId;
     DatabaseHelper myDB;
 
     @Override
@@ -48,9 +30,6 @@ public class RegistrationActivity extends AppCompatActivity {
         password=findViewById(R.id.password);
         register=findViewById(R.id.register);
         login=findViewById(R.id.login);
-        fAuth=FirebaseAuth.getInstance();
-        fStore=FirebaseFirestore.getInstance();
-        fUser=fAuth.getCurrentUser();
         myDB = new DatabaseHelper(this);
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -122,44 +101,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
         else{
 
-//            fAuth.createUserWithEmailAndPassword(email_, password_).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                @Override
-//                public void onComplete(@NonNull Task<AuthResult> task) {
-//                    if(task.isSuccessful())
-//                    {
-//                        userId=fAuth.getCurrentUser().getUid();
-//                        DocumentReference allUserData=fStore.collection("users").document(userId);
-//                        Map<String, Object> users=new HashMap<>();
-//
-//                        users.put("Email",email_);
-//                        users.put("Designation",designation_);
-//                        users.put("Name",name_);
-//                        users.put("Phone",phone_);
-//                        allUserData.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void unused) {
-//                                progressDialog.dismiss();
-//                                Toast.makeText(RegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
-//                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-//                                startActivity(intent);
-//                                RegistrationActivity.this.finish();
-//                            }
-//                        }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                progressDialog.dismiss();
-//                                Toast.makeText(RegistrationActivity.this,"Registration Failed",Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//                    else
-//                    {
-//                        progressDialog.dismiss();
-//                        Toast.makeText(RegistrationActivity.this,"Registration Failed "+ task.getException(),Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                }
-//            });
             boolean result =  myDB.RegisterUser(name_,designation_, phone_,email_,password_);
             if(result == true){
                 Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();

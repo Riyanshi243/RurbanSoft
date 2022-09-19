@@ -10,7 +10,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,35 +31,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CameraActivity extends AppCompatActivity
 {
     String state, district, cluster, gp, component, sub_component, phase, workStatus, userId, timeStamp, email, currentPhotoPath;;
     Button capture, retake, save;
     ImageView captureImage;
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
-    FirebaseFirestore fStore;
-    StorageReference storageReference;
-    ProgressDialog progressDialog;
     Uri imageuri;
     DatabaseHelper myDB;
 
@@ -68,7 +50,6 @@ public class CameraActivity extends AppCompatActivity
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     double lat, lon;
-    int status1=0, status2=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +69,6 @@ public class CameraActivity extends AppCompatActivity
         capture=findViewById(R.id.capture);
         retake=findViewById(R.id.retake);
         save=findViewById(R.id.save);
-        fAuth=FirebaseAuth.getInstance();
-        fStore=FirebaseFirestore.getInstance();
-        fUser=fAuth.getCurrentUser();
-        progressDialog = new ProgressDialog(this);
-        storageReference = FirebaseStorage.getInstance().getReference();
         //retake and save button to appear only when image is clicked
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
@@ -104,7 +80,6 @@ public class CameraActivity extends AppCompatActivity
         } catch (IOException ex) {
 
         }
-        //location permission
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -241,42 +216,8 @@ public class CameraActivity extends AppCompatActivity
     private void saveWorkItem() {
         Date t= Calendar.getInstance().getTime();
         timeStamp=t.toString();
-        progressDialog.setMessage("Please wait while workItem image is uploaded");
-        progressDialog.setTitle("WORK-ITEM");
-        progressDialog.setCanceledOnTouchOutside(false);
         Toast.makeText(CameraActivity.this,"WorkItem is uploading.. Please wait",Toast.LENGTH_LONG).show();
 
-
-//        //uploading data to firebase
-//        DocumentReference allWorkItem=fStore.collection("users").document(userId).collection("WorkItem").document(timeStamp);
-//        Map<String, Object> workItem=new HashMap<>();
-//        uploadPic(imageuri);//uploading image to firebase
-//
-//        workItem.put("Email",email);
-//        workItem.put("State",state );
-//        workItem.put("District", district);
-//        workItem.put("Cluster",cluster);
-//        workItem.put("Gram Panchayat",gp);
-//        workItem.put("Component",component);
-//        workItem.put("Sub_component",sub_component);
-//        workItem.put("Phase",phase);
-//        workItem.put("WorkStatus",workStatus);
-//        workItem.put("Latitude",lat);
-//        workItem.put("Longitude",lon);
-//        workItem.put("timeStamp", timeStamp);
-//
-//        allWorkItem.set(workItem).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void unused) {
-//
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                progressDialog.dismiss();
-//                Toast.makeText(CameraActivity.this,"WorkItem uploading failed",Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         int targetW = captureImage.getWidth();
         int targetH = captureImage.getHeight();
@@ -408,16 +349,14 @@ public class CameraActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
 
-            }
-            else {
+            } else {
                 if (statusOfGPS == true) {
                     @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {
                         lat = location.getLatitude();
                         lon = location.getLongitude();
 
-                    }
-                    else {
+                    } else {
                         AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
                         a_builder.setMessage("Unable to fetch Location..!! Try again later")
                                 .setTitle("Network Error!!")
@@ -430,8 +369,7 @@ public class CameraActivity extends AppCompatActivity
                                 });
                         a_builder.show();
                     }
-                }
-                else{
+                } else {
                     AlertDialog.Builder a_builder = new AlertDialog.Builder(CameraActivity.this);
                     a_builder.setMessage("GPS is OFF, Turn it ON and Try again !..")
                             .setTitle("GPS Error!!")
@@ -448,46 +386,4 @@ public class CameraActivity extends AppCompatActivity
             }
         }
     }
-
-
-//    public void uploadPic(Uri imageuri) {
-//
-//        if(imageuri!=null)
-//        {
-//            progressDialog2.setMessage("Please wait while workItem image is uploaded");
-//            progressDialog2.setTitle("WORK-ITEM");
-//            progressDialog2.setCanceledOnTouchOutside(false);
-//            FirebaseStorage storage = FirebaseStorage.getInstance();
-//
-//            StorageReference storageRef=storage.getReference(userId);
-//
-//            StorageReference fileReference = storageRef.child(timeStamp);
-//            fileReference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    status2=1;
-//                    progressDialog2.dismiss();
-//                    progressDialog.dismiss();
-//                    Toast.makeText(CameraActivity.this,"WorkItem uploading successful",Toast.LENGTH_SHORT).show();
-//                    Intent intent = new Intent(CameraActivity.this, MapActivity.class);
-//                    startActivity(intent);
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    progressDialog2.dismiss();
-//                    progressDialog.dismiss();
-//                    Toast.makeText(CameraActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
-//                }
-//            });
-//            progressDialog2.show();
-//
-//        }
-//
-//        else
-//        {
-//            Toast.makeText(this,"No Image selected",Toast.LENGTH_LONG).show();
-//        }
-//
-//    }
 }

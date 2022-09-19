@@ -2,14 +2,11 @@ package com.example.rurbansoft;
 
 
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 
 
 public class SplashScreen extends AppCompatActivity {

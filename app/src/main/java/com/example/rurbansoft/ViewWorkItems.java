@@ -1,8 +1,6 @@
 package com.example.rurbansoft;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -21,12 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewWorkItems extends AppCompatActivity {
@@ -45,16 +39,13 @@ public class ViewWorkItems extends AppCompatActivity {
 
         List<LatLng> lls = myDB.getLatLng();
         int i=1;
-        int j=0;
+
         for (LatLng ll : lls) {
             LatLng coordinate = new LatLng(ll.latitude, ll.longitude);
             Log.e("latlong", coordinate.toString());
             prepareInfoView(String.valueOf(i++));
 
-            j++;
         }
-
-
     }
     private void prepareInfoView(String i){
 
@@ -66,8 +57,6 @@ public class ViewWorkItems extends AppCompatActivity {
         ImageView infoImageView = new ImageView(ViewWorkItems.this);
 
         DatabaseHelper myDB = new DatabaseHelper(this);
-        //long i = myDB.getCount();
-        // long id = Long.getLong( marker.getTitle());
         String id = i;
         Cursor cursor = myDB.getImage(id);
 

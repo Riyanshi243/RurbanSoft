@@ -3,7 +3,6 @@ package com.example.rurbansoft;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,18 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
     EditText state, district, cluster, gp, component, sub_component, phase, workStatus;
     Button saveItem;
-    ProgressDialog progressDialog;
-    FirebaseAuth fAuth;
-    FirebaseUser fUser;
-    FirebaseFirestore fStore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +31,6 @@ public class MainActivity extends AppCompatActivity {
         workStatus=findViewById(R.id.workStatus);
 
         saveItem=findViewById(R.id.saveItem);
-        progressDialog=new ProgressDialog(this);
-        fAuth=FirebaseAuth.getInstance();
-        fStore=FirebaseFirestore.getInstance();
-        fUser=fAuth.getCurrentUser();
 
         //save the entered details to move on to image capture. data will not be saved in database at this level.
         saveItem.setOnClickListener(new View.OnClickListener() {

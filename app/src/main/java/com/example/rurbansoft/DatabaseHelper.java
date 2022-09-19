@@ -1,6 +1,5 @@
 package com.example.rurbansoft;
 
-import static com.google.firestore.v1.StructuredQuery.CompositeFilter.Operator.AND;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,9 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -183,22 +179,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return userArrayList;
     }
-
-
-//    public ArrayList<AllWorkItems> readWorkItems() {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WorkItem, null);
-//        ArrayList<AllWorkItems> workItemArrayList = new ArrayList<>();
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                workItemArrayList.add(new AllWorkItems(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),
-//                        cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(12)));
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        return workItemArrayList;
-//    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
