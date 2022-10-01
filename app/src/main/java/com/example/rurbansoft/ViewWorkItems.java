@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ViewWorkItems extends AppCompatActivity {
 
-    private DatabaseHelper myDB;
+    private DBHelper myDB;
     LinearLayout ll;
 
     @Override
@@ -33,7 +33,7 @@ public class ViewWorkItems extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_work_items);
 
-        myDB = new DatabaseHelper(this);
+        myDB = new DBHelper(this);
         ll=findViewById(R.id.ll);
 
 
@@ -56,7 +56,7 @@ public class ViewWorkItems extends AppCompatActivity {
 
         ImageView infoImageView = new ImageView(ViewWorkItems.this);
 
-        DatabaseHelper myDB = new DatabaseHelper(this);
+        DBHelper myDB = new DBHelper(this);
         String id = i;
         Cursor cursor = myDB.getImage(id);
 

@@ -44,7 +44,7 @@ public class CameraActivity extends AppCompatActivity
     Button capture, retake, save;
     ImageView captureImage;
     Uri imageuri;
-    DatabaseHelper myDB;
+    DBHelper myDB;
 
 
     private static final int CAMERA_REQUEST = 1888;
@@ -72,7 +72,7 @@ public class CameraActivity extends AppCompatActivity
         //retake and save button to appear only when image is clicked
         retake.setVisibility(View.GONE);
         save.setVisibility(View.GONE);
-        myDB = new DatabaseHelper(this);
+        myDB = new DBHelper(this);
 
         File photoFile = null;
         try {
@@ -260,7 +260,7 @@ public class CameraActivity extends AppCompatActivity
             return;
         }
 
-        myDB = new DatabaseHelper(this);
+        myDB = new DBHelper(this);
 
         boolean insertedData = myDB.insertData(state,district,cluster,gp,component,sub_component,phase,lat,lon,workStatus,timeStamp,byteArray);
 

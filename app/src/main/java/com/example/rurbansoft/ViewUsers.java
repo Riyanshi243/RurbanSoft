@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -11,9 +12,10 @@ import java.util.ArrayList;
 public class ViewUsers extends AppCompatActivity {
 
     private ArrayList<AllUsers> UserArrayList;
-    private DatabaseHelper myDB;
+    private DBHelper myDB;
     private UserAdapter userAdapter;
     private RecyclerView userRV;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +23,7 @@ public class ViewUsers extends AppCompatActivity {
         setContentView(R.layout.activity_view_users);
 
         UserArrayList = new ArrayList<>();
-        myDB = new DatabaseHelper(this);
+        myDB = new DBHelper(this);
 
         UserArrayList = myDB.readUsers();
         userAdapter = new UserAdapter(UserArrayList, ViewUsers.this);

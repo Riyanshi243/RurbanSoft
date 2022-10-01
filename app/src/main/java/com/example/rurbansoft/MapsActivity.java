@@ -105,7 +105,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
     }
 
     private void getLocationFromDataBase() {
-        DatabaseHelper myDB = new DatabaseHelper(this);
+        DBHelper myDB = new DBHelper(this);
         List<LatLng> lls = myDB.getLatLng();
         int i=1;
         int j=0;
@@ -151,7 +151,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
 
         ImageView infoImageView = new ImageView(MapsActivity.this);
 
-        DatabaseHelper myDB = new DatabaseHelper(this);
+        DBHelper myDB = new DBHelper(this);
         String id = marker.getTitle();
         Cursor cursor = myDB.getImage(id);
 

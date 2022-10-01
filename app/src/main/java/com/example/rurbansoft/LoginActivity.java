@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,7 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText phno,password;
     Button login, existingUsers;
     TextView register;
-    DatabaseHelper myDB;
+    DBHelper myDB;
 
 
     @Override
@@ -105,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         else{
-            myDB = new DatabaseHelper(this);
+            myDB = new DBHelper(this);
             boolean result = myDB.checkLogin(phno_,password_);
             if(result == true){
                 Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
