@@ -15,7 +15,6 @@ import java.util.List;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "RurbanSoftdb.db";
-
     private static final int DB_VERSION = 1;
     private static final String TABLE_User = "login";
     public static final String TABLE_WorkItem = "WorkItem";
@@ -56,11 +55,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT)");
 
         db.execSQL("create table " + TABLE_User + "(id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Desig TEXT, phNo TEXT, email TEXT," +
-                " password TEXT)");
+                " password TEXT, Sync INTEGER)");
 
     }
     //function is called when register button is pressed
-    public boolean RegisterUser(String Name , String Desig, String phNo, String email, String password){
+    public boolean RegisterUser(String Name , String Desig, String phNo, String email, String password, int sync){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(col_3, Name);
@@ -68,6 +67,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(col_1, phNo);
         contentValues.put(col_5, email);
         contentValues.put(col_2, password);
+        contentValues.put(col_6, sync);
         long result = db.insert(TABLE_User, null, contentValues);
         if (result == -1)
             return false;
@@ -87,6 +87,18 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;
         else
             return false;
+    }
+
+    public Cursor getUserDetails(String phno, String pass){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor =db.rawQuery("SELECT * FROM "+ TABLE_User +" where phNo = "+ phno +" AND password = '"+ pass +"'",null);
+        if(cursor.moveToFirst())
+        {
+            return cursor;
+        }
+        else
+            Log.d("TAG", "getImage: Error in function");
+        return null;
     }
 
     //function for inserting the details of the workItem

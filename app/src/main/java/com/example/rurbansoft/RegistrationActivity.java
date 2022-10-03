@@ -72,7 +72,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         if(checkAllFields())
         {//saving to local storage
-            boolean result =  myDB.RegisterUser(name_,designation_, phone_,email_,password_);
+            boolean result =  myDB.RegisterUser(name_,designation_, phone_,email_,password_, sync);
             if(result == true){
                 Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
                 Intent intent  = new Intent(RegistrationActivity.this,LoginActivity.class);
@@ -86,12 +86,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
     private void saveNameToServer() {
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Saving USER...");
-        progressDialog.show();
+
 
         if(checkAllFields()) {
+
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Saving USER...");
+            progressDialog.show();
             HttpsTrustManager.allowAllSSL();
+
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_USER,
                     new Response.Listener<String>() {
                         @Override
@@ -100,12 +103,8 @@ public class RegistrationActivity extends AppCompatActivity {
                             try {
                                 JSONObject obj = new JSONObject(response);
                                 if (!obj.getBoolean("error")) {
-                                    //if there is a success
-                                    //storing the name to sqlite with status synced
                                     saveUserToLocalStorage(USER_SYNCED_WITH_SERVER);
                                 } else {
-                                    Log.e("msg", String.valueOf(obj.getJSONObject("message")));
-                                    //if there is some error
                                     saveUserToLocalStorage(USER_NOT_SYNCED_WITH_SERVER);
                                 }
                             } catch (JSONException e) {

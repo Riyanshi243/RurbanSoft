@@ -4,13 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,19 +22,39 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ViewWorkItems extends AppCompatActivity {
 
     private DBHelper myDB;
     LinearLayout ll;
+    String Name, phno;
+
+    public static final String URL_SAVE_WorkItem = "https://192.168.0.108/SqliteSync/saveWorkItem.php";
+    public static final int USER_SYNCED_WITH_SERVER = 1;
+    public static final int USER_NOT_SYNCED_WITH_SERVER = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_work_items);
+
+
+        Name = getIntent().getExtras().getString("Name");
+        phno = getIntent().getExtras().getString("Phno");
 
         myDB = new DBHelper(this);
         ll=findViewById(R.id.ll);
@@ -57,6 +80,7 @@ public class ViewWorkItems extends AppCompatActivity {
         ImageView infoImageView = new ImageView(ViewWorkItems.this);
 
         DBHelper myDB = new DBHelper(this);
+
         String id = i;
         Cursor cursor = myDB.getImage(id);
 
@@ -73,7 +97,6 @@ public class ViewWorkItems extends AppCompatActivity {
         @SuppressLint("Range") String TIME  = cursor.getString(cursor.getColumnIndex("DATE_TIME"));
         @SuppressLint("Range") double lat  = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
         @SuppressLint("Range") double lon  = cursor.getDouble(cursor.getColumnIndex("LONGITUDE"));
-
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -127,14 +150,20 @@ public class ViewWorkItems extends AppCompatActivity {
         TextView subInfoLon= new TextView(ViewWorkItems.this);
         subInfoLon.setText("Longitude: " + lon);
 
+        LinearLayout subIcons = new LinearLayout(ViewWorkItems.this);
+        LinearLayout.LayoutParams subIconsParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        subIcons.setOrientation(LinearLayout.HORIZONTAL);
+        subIcons.setLayoutParams(subIconsParams);
+
         Button delete =new Button(ViewWorkItems.this);
-        delete.setText("DELETE");
+        Drawable deleteIcon= getResources().getDrawable(R.drawable.delete);
+        delete.setBackground(deleteIcon);
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
-                a_builder.setMessage("Are you sure you want to delete this workItem?")
+                a_builder.setMessage("Are you sure you want to delete this workItem? WorkItem will be deleted from the local database only..")
                         .setTitle("Delete WorkItem")
                         .setCancelable(false)
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -157,6 +186,112 @@ public class ViewWorkItems extends AppCompatActivity {
         });
 
 
+        String latitude=String.valueOf(lat);
+        String longitude=String.valueOf(lon);
+
+        ByteArrayOutputStream mBOS = new ByteArrayOutputStream();
+        rotatedBitmap.compress(Bitmap.CompressFormat.PNG,10, mBOS);
+        byte[] mBytImg = mBOS.toByteArray();
+
+        String mStrImg = Base64.encodeToString(mBytImg, Base64.DEFAULT);
+
+
+        Button sync =new Button(ViewWorkItems.this);
+        Drawable syncIcon= getResources().getDrawable(R.drawable.sync);
+        sync.setBackground(syncIcon);
+
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final ProgressDialog progressDialog = new ProgressDialog(ViewWorkItems.this);
+                progressDialog.setMessage("Saving WorkItem...");
+                progressDialog.show();
+                HttpsTrustManager.allowAllSSL();
+
+
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_WorkItem,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                progressDialog.dismiss();
+                                try {
+                                    JSONObject obj = new JSONObject(response);
+                                    if (!obj.getBoolean("error")) {
+                                        AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                        a_builder.setMessage("Data Synced to server")
+                                                .setTitle("Sync Success!")
+                                                .setCancelable(false)
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        dialogInterface.cancel();
+                                                    }
+                                                });
+                                        a_builder.show();
+                                    } else {
+                                        AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                        a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
+                                                .setTitle("Sync Failure!")
+                                                .setCancelable(false)
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        dialogInterface.cancel();
+                                                    }
+                                                });
+                                        a_builder.show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                progressDialog.dismiss();
+                                Log.e("msg", " " + error);AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
+                                        .setTitle("Sync Failure!")
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.cancel();
+                                            }
+                                        });
+                                a_builder.show();
+                            }
+                        }) {
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("UserName", Name);
+                        params.put("UserPhoneNumber",phno );
+                        params.put("State", state);
+                        params.put("District",district);
+                        params.put("Cluster",cluster);
+                        params.put("GP",gp);
+                        params.put("Components",components);
+                        params.put("SubComponents",sub_components);
+                        params.put("Status",status);
+                        params.put("Phase",phase);
+                        params.put("Latitude",latitude);
+                        params.put("Longitude",longitude);
+                        params.put("Image", mStrImg);
+                        params.put("DateTime",TIME);
+                        return params;
+                    }
+                };
+
+                VolleySingleton.getInstance(ViewWorkItems.this).addToRequestQueue(stringRequest);
+
+            }
+        });
+
+        subIcons.addView(delete);
+        subIcons.addView(sync);
+
         subInfoView.addView(subInfoTime);
         subInfoView.addView(subInfoState);
         subInfoView.addView(subInfoDistrict);
@@ -168,7 +303,7 @@ public class ViewWorkItems extends AppCompatActivity {
         subInfoView.addView(subInfoStatus);
         subInfoView.addView(subInfoLat);
         subInfoView.addView(subInfoLon);
-        subInfoView.addView(delete);
+        subInfoView.addView(subIcons);
         infoView.addView(subInfoView);
         infoView.setPadding(0,10,0,40);
 

@@ -9,9 +9,11 @@ import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,7 +26,6 @@ public class LoginActivity extends AppCompatActivity {
     Button login, existingUsers;
     TextView register;
     DBHelper myDB;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("Range")
     private void PerformLogin() {
         String phno_=phno.getText().toString().trim();
         String password_=password.getText().toString().trim();
@@ -108,9 +110,15 @@ public class LoginActivity extends AppCompatActivity {
         else{
             myDB = new DBHelper(this);
             boolean result = myDB.checkLogin(phno_,password_);
+            Cursor userDetails=myDB.getUserDetails(phno_, password_);
             if(result == true){
+
+                @SuppressLint("Range") String Name=userDetails.getString(userDetails.getColumnIndex("Name"));
+                @SuppressLint("Range") String Phno=userDetails.getString(userDetails.getColumnIndex("phNo"));
                 Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
                 Intent intent  = new Intent(LoginActivity.this,LandingUser.class);
+                intent.putExtra("Name", Name);
+                intent.putExtra("Phno", Phno);
                 startActivity(intent);
                 LoginActivity.this.finish();
             }
