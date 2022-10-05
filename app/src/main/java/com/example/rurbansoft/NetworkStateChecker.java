@@ -24,7 +24,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
 
     //context and database helper object
     private Context context;
-    private DatabaseHelper db;
+    //private DatabaseHelper db;
 
 
     @SuppressLint("Range")
@@ -33,7 +33,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
 
         this.context = context;
 
-        db = new DatabaseHelper(context);
+       // db = new DatabaseHelper(context);
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -44,16 +44,16 @@ public class NetworkStateChecker extends BroadcastReceiver {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
 
                 //getting all the unsynced names
-                Cursor cursor = db.getUnsyncedNames();
-                if (cursor.moveToFirst()) {
-                    do {
-                        //calling the method to save the unsynced name to MySQL
-                        saveName(
-                                cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID)),
-                                cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME))
-                        );
-                    } while (cursor.moveToNext());
-                }
+                //Cursor cursor = db.getUnsyncedNames();
+//                if (cursor.moveToFirst()) {
+//                    do {
+//                        //calling the method to save the unsynced name to MySQL
+//                        saveName(
+//                                cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID)),
+//                                cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME))
+//                        );
+//                    } while (cursor.moveToNext());
+//                }
             }
         }
     }
@@ -64,40 +64,40 @@ public class NetworkStateChecker extends BroadcastReceiver {
      * if the name is successfully sent
      * we will update the status as synced in SQLite
      * */
-    private void saveName(final int id, final String name) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, NamesServer.URL_SAVE_NAME,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject obj = new JSONObject(response);
-                            if (!obj.getBoolean("error")) {
-                                //updating the status in sqlite
-                                db.updateNameStatus(id, NamesServer.NAME_SYNCED_WITH_SERVER);
-
-                                //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(NamesServer.DATA_SAVED_BROADCAST));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("name", name);
-                return params;
-            }
-        };
-
-        VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
-    }
+//    private void saveName(final int id, final String name) {
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, NamesServer.URL_SAVE_NAME,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//                            JSONObject obj = new JSONObject(response);
+//                            if (!obj.getBoolean("error")) {
+//                                //updating the status in sqlite
+//                                db.updateNameStatus(id, NamesServer.NAME_SYNCED_WITH_SERVER);
+//
+//                                //sending the broadcast to refresh the list
+//                                context.sendBroadcast(new Intent(NamesServer.DATA_SAVED_BROADCAST));
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//
+//                    }
+//                }) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("name", name);
+//                return params;
+//            }
+//        };
+//
+//        VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
+//    }
 
 }
