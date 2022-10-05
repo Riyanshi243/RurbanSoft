@@ -2,8 +2,10 @@ package com.example.rurbansoft;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,7 +35,7 @@ public class RegistrationActivity extends AppCompatActivity {
     TextView login;
     DBHelper myDB;
     String name_,designation_,phone_,email_, password_;
-    public static final String URL_SAVE_USER = "https://192.168.0.108/SqliteSync/saveUsers.php";
+    public static final String URL_SAVE_USER = "https://192.168.1.52/SqliteSync/saveUsers.php";
     public static final int USER_SYNCED_WITH_SERVER = 1;
     public static final int USER_NOT_SYNCED_WITH_SERVER = 0;
 
@@ -85,7 +87,7 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
     }
-    private void saveNameToServer() {
+    public void saveNameToServer() {
 
 
         if(checkAllFields()) {
@@ -103,8 +105,32 @@ public class RegistrationActivity extends AppCompatActivity {
                             try {
                                 JSONObject obj = new JSONObject(response);
                                 if (!obj.getBoolean("error")) {
+
+                                    AlertDialog.Builder a_builder = new AlertDialog.Builder(RegistrationActivity.this);
+                                    a_builder.setMessage("User Details synced to server!!")
+                                            .setTitle("Sync Status!")
+                                            .setCancelable(false)
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.cancel();
+                                                }
+                                            });
+                                    a_builder.show();
                                     saveUserToLocalStorage(USER_SYNCED_WITH_SERVER);
                                 } else {
+
+                                    AlertDialog.Builder a_builder = new AlertDialog.Builder(RegistrationActivity.this);
+                                    a_builder.setMessage("User Details could not be synced to server, Please sync manually by visiting \"VIEW ALL EXISTING USERS\" on login page !!")
+                                            .setTitle("Sync Status!")
+                                            .setCancelable(false)
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.cancel();
+                                                }
+                                            });
+                                    a_builder.show();
                                     saveUserToLocalStorage(USER_NOT_SYNCED_WITH_SERVER);
                                 }
                             } catch (JSONException e) {
@@ -117,6 +143,18 @@ public class RegistrationActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             progressDialog.dismiss();
                             Log.e("msg", " " + error);
+
+                            AlertDialog.Builder a_builder = new AlertDialog.Builder(RegistrationActivity.this);
+                            a_builder.setMessage("User Details could not be synced to server, Please sync manually by visiting \"VIEW ALL EXISTING USERS\" on login page !!")
+                                    .setTitle("Sync Status!")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
+                            a_builder.show();
                             saveUserToLocalStorage(USER_NOT_SYNCED_WITH_SERVER);
                         }
                     }) {

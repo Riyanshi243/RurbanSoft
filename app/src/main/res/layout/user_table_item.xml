@@ -117,6 +117,14 @@
             </TableRow>
         </TableLayout>
 
+        <ImageView
+            android:id="@+id/sync_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            app:srcCompat="@drawable/sync" />
+
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

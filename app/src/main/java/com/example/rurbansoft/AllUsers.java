@@ -5,6 +5,7 @@ public class AllUsers {
     private String Design;
     private String Phone;
     private String Email;
+    private int Sync;
     private int id;
 
     // creating getter and setter methods
@@ -47,13 +48,22 @@ public class AllUsers {
     public void setId(int id) {
         this.id = id;
     }
+    public int getSync() {
+        return Sync;
+    }
+
+    public void setSync(int sync) {
+        Sync = sync;
+    }
+
 
     // constructor
-    public AllUsers(String Name, String Design, String Phone, String Email) {
+    public AllUsers(String Name, String Design, String Phone, String Email,int Sync) {
         this.Name = Name;
         this.Design = Design;
         this.Phone = Phone;
         this.Email = Email;
+        this.Sync=Sync;
     }
 }
 

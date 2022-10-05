@@ -43,9 +43,7 @@ public class ViewWorkItems extends AppCompatActivity {
     LinearLayout ll;
     String Name, phno;
 
-    public static final String URL_SAVE_WorkItem = "https://192.168.0.108/SqliteSync/saveWorkItem.php";
-    public static final int USER_SYNCED_WITH_SERVER = 1;
-    public static final int USER_NOT_SYNCED_WITH_SERVER = 0;
+    public static final String URL_SAVE_WorkItem = "https://192.168.1.52/SqliteSync/saveWorkItem.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +79,7 @@ public class ViewWorkItems extends AppCompatActivity {
 
         DBHelper myDB = new DBHelper(this);
 
+
         String id = i;
         Cursor cursor = myDB.getImage(id);
 
@@ -97,6 +96,7 @@ public class ViewWorkItems extends AppCompatActivity {
         @SuppressLint("Range") String TIME  = cursor.getString(cursor.getColumnIndex("DATE_TIME"));
         @SuppressLint("Range") double lat  = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
         @SuppressLint("Range") double lon  = cursor.getDouble(cursor.getColumnIndex("LONGITUDE"));
+        @SuppressLint("Range") int sync_val  = cursor.getInt(cursor.getColumnIndex("SYNC"));
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -156,8 +156,9 @@ public class ViewWorkItems extends AppCompatActivity {
         subIcons.setLayoutParams(subIconsParams);
 
         Button delete =new Button(ViewWorkItems.this);
-        Drawable deleteIcon= getResources().getDrawable(R.drawable.delete);
+        Drawable deleteIcon= getResources().getDrawable(R.drawable.roundedbutton);
         delete.setBackground(deleteIcon);
+        delete.setText("DELETE");
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,102 +196,126 @@ public class ViewWorkItems extends AppCompatActivity {
 
         String mStrImg = Base64.encodeToString(mBytImg, Base64.DEFAULT);
 
-
         Button sync =new Button(ViewWorkItems.this);
-        Drawable syncIcon= getResources().getDrawable(R.drawable.sync);
+        Drawable syncIcon= getResources().getDrawable(R.drawable.roundedbutton);
         sync.setBackground(syncIcon);
-
-        sync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final ProgressDialog progressDialog = new ProgressDialog(ViewWorkItems.this);
-                progressDialog.setMessage("Saving WorkItem...");
-                progressDialog.show();
-                HttpsTrustManager.allowAllSSL();
-
-
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_WorkItem,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                progressDialog.dismiss();
-                                try {
-                                    JSONObject obj = new JSONObject(response);
-                                    if (!obj.getBoolean("error")) {
-                                        AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
-                                        a_builder.setMessage("Data Synced to server")
-                                                .setTitle("Sync Success!")
-                                                .setCancelable(false)
-                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        dialogInterface.cancel();
-                                                    }
-                                                });
-                                        a_builder.show();
-                                    } else {
-                                        AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
-                                        a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
-                                                .setTitle("Sync Failure!")
-                                                .setCancelable(false)
-                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        dialogInterface.cancel();
-                                                    }
-                                                });
-                                        a_builder.show();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+        if(sync_val==1)
+        {
+            sync.setText("SYNCED");
+            sync.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                    a_builder.setMessage("This workItem is already synced on server!!")
+                            .setTitle("Sync Status!")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
                                 }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                progressDialog.dismiss();
-                                Log.e("msg", " " + error);AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
-                                a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
-                                        .setTitle("Sync Failure!")
-                                        .setCancelable(false)
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                dialogInterface.cancel();
-                                            }
-                                        });
-                                a_builder.show();
-                            }
-                        }) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("UserName", Name);
-                        params.put("UserPhoneNumber",phno );
-                        params.put("State", state);
-                        params.put("District",district);
-                        params.put("Cluster",cluster);
-                        params.put("GP",gp);
-                        params.put("Components",components);
-                        params.put("SubComponents",sub_components);
-                        params.put("Status",status);
-                        params.put("Phase",phase);
-                        params.put("Latitude",latitude);
-                        params.put("Longitude",longitude);
-                        params.put("Image", mStrImg);
-                        params.put("DateTime",TIME);
-                        return params;
-                    }
-                };
+                            });
+                    a_builder.show();
+                }
+            });
+        }
+        else
+        {
+            sync.setText("SYNC");
+            sync.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final ProgressDialog progressDialog = new ProgressDialog(ViewWorkItems.this);
+                    progressDialog.setMessage("Saving WorkItem...");
+                    progressDialog.show();
+                    HttpsTrustManager.allowAllSSL();
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_WorkItem,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    progressDialog.dismiss();
+                                    try {
+                                        JSONObject obj = new JSONObject(response);
+                                        if (!obj.getBoolean("error")) {
+                                            AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                            a_builder.setMessage("Data Synced to server")
+                                                    .setTitle("Sync Success!")
+                                                    .setCancelable(false)
+                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            dialogInterface.cancel();
+                                                        }
+                                                    });
+                                            a_builder.show();
+                                            myDB.updateSyncStatus(id,1);
+                                            sync.setText("SYNCED");
 
-                VolleySingleton.getInstance(ViewWorkItems.this).addToRequestQueue(stringRequest);
+                                        } else {
+                                            AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                            a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
+                                                    .setTitle("Sync Failure!")
+                                                    .setCancelable(false)
+                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            dialogInterface.cancel();
+                                                        }
+                                                    });
+                                            a_builder.show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    progressDialog.dismiss();
+                                    Log.e("msg", " " + error);AlertDialog.Builder a_builder = new AlertDialog.Builder(ViewWorkItems.this);
+                                    a_builder.setMessage("Data could not be Synced to server, Please Try again later!!")
+                                            .setTitle("Sync Failure!")
+                                            .setCancelable(false)
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.cancel();
+                                                }
+                                            });
+                                    a_builder.show();
+                                }
+                            }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("UserName", Name);
+                            params.put("UserPhoneNumber",phno );
+                            params.put("State", state);
+                            params.put("District",district);
+                            params.put("Cluster",cluster);
+                            params.put("GP",gp);
+                            params.put("Components",components);
+                            params.put("SubComponents",sub_components);
+                            params.put("Status",status);
+                            params.put("Phase",phase);
+                            params.put("Latitude",latitude);
+                            params.put("Longitude",longitude);
+                            params.put("Image", mStrImg);
+                            params.put("DateTime",TIME);
+                            return params;
+                        }
+                    };
 
-            }
-        });
+                    VolleySingleton.getInstance(ViewWorkItems.this).addToRequestQueue(stringRequest);
+
+                }
+            });
+        }
 
         subIcons.addView(delete);
         subIcons.addView(sync);
+        subIcons.setPadding(0,10,0,10);
 
         subInfoView.addView(subInfoTime);
         subInfoView.addView(subInfoState);

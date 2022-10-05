@@ -32,6 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COL_12 = "STATUS";
     public static final String COL_13 = "DATE_TIME";
     public static final String COL_14 = "IMAGE";
+    public static final String COL_15 = "SYNC";//boolean --> 0 for not synced and 1 for synced to server...
 
     public static final String col_1 = "phNo";
     public static final String col_2 = "password";
@@ -52,7 +53,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table " + TABLE_WorkItem + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, STATE TEXT, DISTRICT TEXT, CLUSTER TEXT,  GP TEXT," +
                 " COMPONENTS TEXT, SUB_COMPONENTS TEXT, STATUS TEXT, PHASE TEXT,LATITUDE DOUBLE," +
-                " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT)");
+                " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT, SYNC INTEGER)");
 
         db.execSQL("create table " + TABLE_User + "(id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Desig TEXT, phNo TEXT, email TEXT," +
                 " password TEXT, Sync INTEGER)");
@@ -102,7 +103,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     //function for inserting the details of the workItem
-    public boolean insertData(String State, String District, String Cluster, String gp, String Component, String SubComponent, String Phase, double lat, double lon, String status , String data_time, byte[] image)
+    public boolean insertData(String State, String District, String Cluster, String gp, String Component, String SubComponent, String Phase, double lat, double lon, String status , String data_time, byte[] image, int sync)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -118,6 +119,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COL_12, status);
         contentValues.put(COL_13, data_time);
         contentValues.put(COL_14, image);
+        contentValues.put(COL_15, sync);
 
         long result = db.insert(TABLE_WorkItem, null, contentValues);
         if (result == -1)
@@ -125,7 +127,11 @@ public class DBHelper extends SQLiteOpenHelper {
         else
             return true;
     }
-
+    public void updateSyncStatus(String id, int sync)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE "+ TABLE_WorkItem+" SET "+COL_15+"="+sync +" WHERE "+COL_1+" = "+id);
+    }
     public List<LatLng> getLatLng() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<LatLng>  latLngList = new ArrayList<LatLng>();
@@ -170,10 +176,10 @@ public class DBHelper extends SQLiteOpenHelper {
         String tempTable="tempTable";
         db.execSQL("create table " + tempTable + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, STATE TEXT, DISTRICT TEXT, CLUSTER TEXT,  GP TEXT," +
                 " COMPONENTS TEXT, SUB_COMPONENTS TEXT, STATUS TEXT, PHASE TEXT,LATITUDE DOUBLE," +
-                " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT)");
+                " LONGITUDE DOUBLE, IMAGE blob, DATE_TIME TEXT, SYNC INTEGER)");
 
-        db.execSQL("INSERT INTO "+ tempTable+ "(STATE, DISTRICT,CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME) " +
-                "SELECT STATE, DISTRICT, CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME FROM "+ TABLE_WorkItem);
+        db.execSQL("INSERT INTO "+ tempTable+ "(STATE, DISTRICT,CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME,SYNC ) " +
+                "SELECT STATE, DISTRICT, CLUSTER, GP, COMPONENTS, SUB_COMPONENTS, STATUS, PHASE, LATITUDE, LONGITUDE, IMAGE, DATE_TIME, SYNC FROM "+ TABLE_WorkItem);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WorkItem);
         db.execSQL("ALTER TABLE " + tempTable+"  RENAME TO "+ TABLE_WorkItem);
 
@@ -187,7 +193,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                userArrayList.add(new AllUsers(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4)));
+                userArrayList.add(new AllUsers(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getInt(6)));
             } while (cursor.moveToNext());
         }
         cursor.close();

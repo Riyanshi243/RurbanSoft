@@ -262,7 +262,7 @@ public class CameraActivity extends AppCompatActivity
 
         myDB = new DBHelper(this);
 
-        boolean insertedData = myDB.insertData(state,district,cluster,gp,component,sub_component,phase,lat,lon,workStatus,timeStamp,byteArray);
+        boolean insertedData = myDB.insertData(state,district,cluster,gp,component,sub_component,phase,lat,lon,workStatus,timeStamp,byteArray, 0);
 
 
         if(insertedData   == true)
