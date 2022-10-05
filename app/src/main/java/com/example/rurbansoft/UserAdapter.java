@@ -32,9 +32,7 @@ import java.util.Map;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> { // variable for our array list and context
     private ArrayList<AllUsers> UserArrayList;
     private Context context;
-    public static final String URL_SAVE_USER = "https://192.168.1.52/SqliteSync/saveUsers.php";
-    public static final int USER_SYNCED_WITH_SERVER = 1;
-    public static final int USER_NOT_SYNCED_WITH_SERVER = 0;
+
 
     // constructor
     public UserAdapter(ArrayList<AllUsers> UserArrayList, Context context) {
@@ -64,51 +62,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> { 
         if(sync==1)
             holder.sync_img.setVisibility(View.GONE);
         else {
-//            holder.sync_img.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    holder.sync_img.setVisibility(View.GONE);
-//
-//                    HttpsTrustManager.allowAllSSL();
-//
-//                    StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_USER,
-//                            new Response.Listener<String>() {
-//                                @Override
-//                                public void onResponse(String response) {
-//                                    try {
-//                                        JSONObject obj = new JSONObject(response);
-//                                        if (!obj.getBoolean("error")) {
-//
-//                                        } else {
-//                                        }
-//                                    } catch (JSONException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                }
-//                            },
-//                            new Response.ErrorListener() {
-//                                @Override
-//                                public void onErrorResponse(VolleyError error) {
-//
-//                                    Log.e("msg", " " + error);
-//                                }
-//                            }) {
-//                        @Override
-//                        protected Map<String, String> getParams() throws AuthFailureError {
-//                            Map<String, String> params = new HashMap<>();
-//                            params.put("Name", "name_");
-//                            params.put("PhoneNumber", "phone_");
-//                            params.put("EmailId", "email_");
-//                            params.put("Designation", "designation_");
-//                            params.put("Password", "password_");
-//                            return params;
-//                        }
-//                    };
-//
-//                    //VolleySingleton.getInstance(UserAdapter.this).addToRequestQueue(stringRequest);
-//                }
-//
-//            });
+            holder.sync_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         }
 
     }

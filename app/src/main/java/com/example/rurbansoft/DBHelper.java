@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
+    //ALTER TABLE `users` AUTO_INCREMENT = 1;
 
     private static final String DB_NAME = "RurbanSoftdb.db";
     private static final int DB_VERSION = 1;
