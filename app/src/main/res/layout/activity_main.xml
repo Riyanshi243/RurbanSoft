@@ -47,15 +47,15 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/state"
+
+            <Spinner
+                android:id="@+id/spinner1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="State"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -65,15 +65,14 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/district"
+            <Spinner
+                android:id="@+id/spinner2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="District"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -83,15 +82,14 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/cluster"
+            <Spinner
+                android:id="@+id/spinner3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="Cluster"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp"/>
 
             <TextView
                 android:id="@+id/textView4"
@@ -101,15 +99,14 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/gp"
+            <Spinner
+                android:id="@+id/spinner4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="Gram Panchayat"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView5"
@@ -119,15 +116,14 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/component"
+            <Spinner
+                android:id="@+id/spinner5"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="Component"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -137,15 +133,14 @@
                 android:text="Enter Sub Component"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/sub_component"
+            <Spinner
+                android:id="@+id/spinner6"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="Sub Component"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp"/>
 
             <TextView
                 android:id="@+id/textView7"
@@ -155,15 +150,14 @@
                 android:text="Enter Phase"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/phase"
+            <Spinner
+                android:id="@+id/spinner7"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="Phase"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -173,15 +167,14 @@
                 android:paddingLeft="2dp"
                 android:textSize="20dp" />
 
-            <EditText
-                android:id="@+id/workStatus"
+            <Spinner
+                android:id="@+id/spinner8"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:ems="10"
-                android:hint="WorkStatus"
-                android:inputType="textPersonName"
-                android:text="" />
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:dropDownWidth="match_parent"
+                android:textSize="34sp" />
 
             <Button
                 android:id="@+id/saveItem"

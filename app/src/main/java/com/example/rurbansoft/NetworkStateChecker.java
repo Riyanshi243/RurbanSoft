@@ -22,11 +22,7 @@ import java.util.Map;
 
 public class NetworkStateChecker extends BroadcastReceiver {
 
-    //context and database helper object
     private Context context;
-    //private DatabaseHelper db;
-
-
     @SuppressLint("Range")
     @Override
     public void onReceive(Context context, Intent intent) {

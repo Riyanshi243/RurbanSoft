@@ -43,7 +43,7 @@ public class ViewWorkItems extends AppCompatActivity {
     LinearLayout ll;
     String Name, phno;
 
-    public static final String URL_SAVE_WorkItem = "https://192.168.1.52/SqliteSync/saveWorkItem.php";
+   // public static final String URL_SAVE_WorkItem = "https://192.168.1.52/SqliteSync/saveWorkItem.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,7 +229,7 @@ public class ViewWorkItems extends AppCompatActivity {
                     progressDialog.setMessage("Saving WorkItem...");
                     progressDialog.show();
                     HttpsTrustManager.allowAllSSL();
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_WorkItem,
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, ServerConnect.SERVER_URL_WorkItem,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {

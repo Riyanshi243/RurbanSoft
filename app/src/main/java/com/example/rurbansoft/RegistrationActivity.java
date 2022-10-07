@@ -35,7 +35,7 @@ public class RegistrationActivity extends AppCompatActivity {
     TextView login;
     DBHelper myDB;
     String name_,designation_,phone_,email_, password_;
-    public static final String URL_SAVE_USER = "https://192.168.1.52/SqliteSync/saveUsers.php";
+    //public static final String URL_SAVE_USER = "https://192.168.1.52/SqliteSync/saveUsers.php";
     public static final int USER_SYNCED_WITH_SERVER = 1;
     public static final int USER_NOT_SYNCED_WITH_SERVER = 0;
 
@@ -97,7 +97,7 @@ public class RegistrationActivity extends AppCompatActivity {
             progressDialog.show();
             HttpsTrustManager.allowAllSSL();
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_USER,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, ServerConnect.SERVER_URL_Users,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

@@ -43,16 +43,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> { 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // on below line we are inflating our layout
-        // file for our recycler view items.
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_table_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // on below line we are setting data
-        // to our views of recycler view item.
+
         AllUsers modal = UserArrayList.get(position);
         holder.Name.setText(modal.getName());
         holder.Design.setText(modal.getDesign());
