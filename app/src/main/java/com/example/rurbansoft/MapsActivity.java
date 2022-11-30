@@ -103,7 +103,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         }
 
     }
-
+//function to add markers on map
     private void getLocationFromDataBase() {
         DBHelper myDB = new DBHelper(this);
         List<LatLng> lls = myDB.getLatLng();
@@ -111,9 +111,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.InfoWin
         int j=0;
         for (LatLng ll : lls) {
             LatLng coordinate = new LatLng(ll.latitude, ll.longitude);
-
-            Log.e("latlong", coordinate.toString());
-
             Marker marker = mMap.addMarker(new MarkerOptions().position(coordinate).title(String.valueOf(i++)));
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             j++;

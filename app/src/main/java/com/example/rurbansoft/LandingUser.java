@@ -13,6 +13,7 @@ public class LandingUser extends AppCompatActivity {
 
     Button workItem, map, entriesView;
     String Name, phno;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

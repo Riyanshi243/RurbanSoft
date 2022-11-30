@@ -198,6 +198,7 @@ public class CameraActivity extends AppCompatActivity
         });
 
     }
+    //creating image file to upload
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -254,11 +255,11 @@ public class CameraActivity extends AppCompatActivity
         byte[] byteArray = stream.toByteArray();
         Log.e("bytes",byteArray.length +" ");
 
-        if(byteArray.length>4089446)
-        {
-            Toast.makeText(CameraActivity.this, "Error!! Image too large to save. Please try again..", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if(byteArray.length>4089446)
+//        {
+//            Toast.makeText(CameraActivity.this, "Error!! Image too large to save. Please try again..", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         myDB = new DBHelper(this);
 
@@ -309,6 +310,7 @@ public class CameraActivity extends AppCompatActivity
 
     }
 
+//permission for camera use
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -350,6 +352,7 @@ public class CameraActivity extends AppCompatActivity
                         android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
 
             } else {
+                //accessing location of place where image is clicked
                 if (statusOfGPS == true) {
                     @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {

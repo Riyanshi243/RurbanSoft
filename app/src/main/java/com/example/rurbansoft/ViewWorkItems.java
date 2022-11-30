@@ -41,9 +41,7 @@ public class ViewWorkItems extends AppCompatActivity {
 
     private DBHelper myDB;
     LinearLayout ll;
-    String Name, phno;
-
-   // public static final String URL_SAVE_WorkItem = "https://192.168.1.52/SqliteSync/saveWorkItem.php";
+    String Name="", phno="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +49,8 @@ public class ViewWorkItems extends AppCompatActivity {
         setContentView(R.layout.activity_view_work_items);
 
 
-        Name = getIntent().getExtras().getString("Name");
-        phno = getIntent().getExtras().getString("Phno");
+//        Name = getIntent().getExtras().getString("Name");
+//        phno = getIntent().getExtras().getString("Phno");
 
         myDB = new DBHelper(this);
         ll=findViewById(R.id.ll);
@@ -172,7 +170,8 @@ public class ViewWorkItems extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 myDB.deleteItem(TIME);
                                 Toast.makeText(ViewWorkItems.this, "Deleted the Item", Toast.LENGTH_SHORT).show();
-                                Intent i = new Intent(ViewWorkItems.this, LandingUser.class);
+                                Intent i = new Intent(ViewWorkItems.this, ViewWorkItems.class);
+                                ViewWorkItems.this.finish();
                                 startActivity(i);
                             }
                         }).setNegativeButton("NO", new DialogInterface.OnClickListener() {

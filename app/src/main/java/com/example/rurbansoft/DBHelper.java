@@ -60,6 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 " password TEXT, Sync INTEGER)");
 
     }
+
     //function is called when register button is pressed
     public boolean RegisterUser(String Name , String Desig, String phNo, String email, String password, int sync){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -75,7 +76,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return false;
         else
             return true;
-
     }
 
     //function called when login/submit button is pressed
@@ -128,11 +128,14 @@ public class DBHelper extends SQLiteOpenHelper {
         else
             return true;
     }
+
     public void updateSyncStatus(String id, int sync)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE "+ TABLE_WorkItem+" SET "+COL_15+"="+sync +" WHERE "+COL_1+" = "+id);
     }
+
+    //fetching data of each workitem
     public List<LatLng> getLatLng() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<LatLng>  latLngList = new ArrayList<LatLng>();
@@ -170,6 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
+//function to delete workitem from SQLite database
     public void deleteItem(String timeStamp) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -187,6 +191,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+//displaying list of all users
     public ArrayList<AllUsers> readUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_User, null);
