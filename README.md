@@ -10,7 +10,7 @@ Step 1: Download the project zip in your system.
 
 Step 2: Unzip the folder and rename the project to RurbanSoft.
 
-Step 3: Create you API key for google maps. Follow the steps mentioned in **[Create API KEY](https://developers.google.com/maps/documentation/android-sdk/get-api-key)** https://developers.google.com/maps/documentation/android-sdk/get-api-key
+Step 3: Create you API key for google maps. Follow the steps mentioned in **[Create API KEY](https://developers.google.com/maps/documentation/android-sdk/get-api-key)** 
 
 Step 4: Open the project in android studio and let the project built.
 
